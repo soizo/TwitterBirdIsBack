@@ -1,0 +1,317 @@
+[
+  {
+    "code": "ar",
+    "language": "ar",
+    "translationLabels": [
+      "عرض الترجمة"
+    ]
+  },
+  {
+    "code": "ar-x-fm",
+    "language": "ar-x-fm",
+    "translationLabels": [
+      "عرض الترجمة"
+    ]
+  },
+  {
+    "code": "bn",
+    "language": "bn",
+    "translationLabels": [
+      "অনুবাদ দেখান"
+    ]
+  },
+  {
+    "code": "en-gb",
+    "language": "en-GB",
+    "translationLabels": [
+      "Show translation"
+    ]
+  },
+  {
+    "code": "bg",
+    "language": "bg",
+    "translationLabels": [
+      "Показване на превод"
+    ]
+  },
+  {
+    "code": "ca",
+    "language": "ca",
+    "translationLabels": [
+      "Mostra la traducció"
+    ]
+  },
+  {
+    "code": "hr",
+    "language": "hr",
+    "translationLabels": [
+      "Prikaži prijevod"
+    ]
+  },
+  {
+    "code": "cs",
+    "language": "cs",
+    "translationLabels": [
+      "Zobrazit překlad"
+    ]
+  },
+  {
+    "code": "da",
+    "language": "da",
+    "translationLabels": [
+      "Vis oversættelse"
+    ]
+  },
+  {
+    "code": "nl",
+    "language": "nl",
+    "translationLabels": [
+      "Vertaling tonen"
+    ]
+  },
+  {
+    "code": "en",
+    "language": "en",
+    "translationLabels": [
+      "Show translation"
+    ]
+  },
+  {
+    "code": "fil",
+    "language": "fil",
+    "translationLabels": [
+      "Ipakita ang pagsasalin"
+    ]
+  },
+  {
+    "code": "fi",
+    "language": "fi",
+    "translationLabels": [
+      "Näytä käännös"
+    ]
+  },
+  {
+    "code": "fr",
+    "language": "fr",
+    "translationLabels": [
+      "Afficher la traduction"
+    ]
+  },
+  {
+    "code": "de",
+    "language": "de",
+    "translationLabels": [
+      "Übersetzung zeigen"
+    ]
+  },
+  {
+    "code": "el",
+    "language": "el",
+    "translationLabels": [
+      "Εμφάνιση μετάφρασης"
+    ]
+  },
+  {
+    "code": "gu",
+    "language": "gu",
+    "translationLabels": [
+      "અનુવાદ બતાવો"
+    ]
+  },
+  {
+    "code": "he",
+    "language": "he",
+    "translationLabels": [
+      "הצגת תרגום"
+    ]
+  },
+  {
+    "code": "hi",
+    "language": "hi",
+    "translationLabels": [
+      "अनुवाद दिखाएं"
+    ]
+  },
+  {
+    "code": "hu",
+    "language": "hu",
+    "translationLabels": [
+      "Fordítás megjelenítése"
+    ]
+  },
+  {
+    "code": "id",
+    "language": "id",
+    "translationLabels": [
+      "Tampilkan terjemahan"
+    ]
+  },
+  {
+    "code": "it",
+    "language": "it",
+    "translationLabels": [
+      "Mostra traduzione"
+    ]
+  },
+  {
+    "code": "ja",
+    "language": "ja",
+    "translationLabels": [
+      "翻訳を表示"
+    ]
+  },
+  {
+    "code": "kn",
+    "language": "kn",
+    "translationLabels": [
+      "ಅನುವಾದವನ್ನು ತೋರಿಸಿ"
+    ]
+  },
+  {
+    "code": "ko",
+    "language": "ko",
+    "translationLabels": [
+      "번역 보기"
+    ]
+  },
+  {
+    "code": "msa",
+    "language": "ms",
+    "translationLabels": [
+      "Tunjukkan terjemahan"
+    ]
+  },
+  {
+    "code": "mr",
+    "language": "mr",
+    "translationLabels": [
+      "भाषांतर दाखवा"
+    ]
+  },
+  {
+    "code": "no",
+    "language": "nb",
+    "translationLabels": [
+      "Vis oversettelse"
+    ]
+  },
+  {
+    "code": "fa",
+    "language": "fa",
+    "translationLabels": [
+      "نشان دادن ترجمه"
+    ]
+  },
+  {
+    "code": "pl",
+    "language": "pl",
+    "translationLabels": [
+      "Pokaż tłumaczenie"
+    ]
+  },
+  {
+    "code": "pt",
+    "language": "pt",
+    "translationLabels": [
+      "Mostrar tradução"
+    ]
+  },
+  {
+    "code": "ro",
+    "language": "ro",
+    "translationLabels": [
+      "Afișează traducerea"
+    ]
+  },
+  {
+    "code": "ru",
+    "language": "ru",
+    "translationLabels": [
+      "Показать перевод"
+    ]
+  },
+  {
+    "code": "sr",
+    "language": "sr",
+    "translationLabels": [
+      "Прикажи превод"
+    ]
+  },
+  {
+    "code": "zh-cn",
+    "language": "zh",
+    "translationLabels": [
+      "显示翻译"
+    ]
+  },
+  {
+    "code": "sk",
+    "language": "sk",
+    "translationLabels": [
+      "Zobraziť preklad"
+    ]
+  },
+  {
+    "code": "es",
+    "language": "es",
+    "translationLabels": [
+      "Mostrar traducción"
+    ]
+  },
+  {
+    "code": "sv",
+    "language": "sv",
+    "translationLabels": [
+      "Visa översättningen"
+    ]
+  },
+  {
+    "code": "ta",
+    "language": "ta",
+    "translationLabels": [
+      "மொழிபெயர்ப்பைக் காட்டு"
+    ]
+  },
+  {
+    "code": "th",
+    "language": "th",
+    "translationLabels": [
+      "แสดงการแปล"
+    ]
+  },
+  {
+    "code": "zh-tw",
+    "language": "zh-Hant",
+    "translationLabels": [
+      "顯示翻譯"
+    ]
+  },
+  {
+    "code": "tr",
+    "language": "tr",
+    "translationLabels": [
+      "Çeviriyi göster"
+    ]
+  },
+  {
+    "code": "uk",
+    "language": "uk",
+    "translationLabels": [
+      "Показати переклад"
+    ]
+  },
+  {
+    "code": "ur",
+    "language": "ur",
+    "translationLabels": [
+      "Show translation"
+    ]
+  },
+  {
+    "code": "vi",
+    "language": "vi",
+    "translationLabels": [
+      "Hiện bản dịch"
+    ]
+  }
+]

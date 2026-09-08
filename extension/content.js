@@ -25,10 +25,19 @@
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="#1d9bf0" d="${bird}"/></svg>`,
   )}`;
 
+  function isTranslationButton(element) {
+    if (!element?.matches("button")) return false;
+    const label = element.getAttribute("aria-label");
+    return (
+      globalThis.TwitterBirdLocales?.isTranslationLabel(label) ??
+      label === "Show translation"
+    );
+  }
+
   function replaceIcons(root) {
     if (root.nodeType !== Node.ELEMENT_NODE) return;
     if (
-      root.matches('button[aria-label="Show translation"]') &&
+      isTranslationButton(root) &&
       root.previousElementSibling?.matches("svg")
     ) {
       replaceIcons(root.previousElementSibling);
@@ -54,9 +63,7 @@
       }
       const svg = path.ownerSVGElement;
       if (
-        svg?.nextElementSibling?.matches(
-          'button[aria-label="Show translation"]',
-        ) &&
+        isTranslationButton(svg?.nextElementSibling) &&
         path.getAttribute("d") !== GLOBE_PATH
       ) {
         path.setAttribute("d", GLOBE_PATH);
@@ -70,7 +77,7 @@
     for (const record of records) {
       if (
         record.type === "attributes" &&
-        record.target.matches('link, button[aria-label="Show translation"]')
+        (record.target.matches("link") || isTranslationButton(record.target))
       ) {
         replaceIcons(record.target);
       }

@@ -10,7 +10,8 @@
 - 不做整页文字替换；跳过推文正文、已识别的用户名／用户资料区域和输入内容。未识别的界面区域可能仍显示新用语。
 - 侧栏与编辑框发帖按钮、Follow 按钮：背景 `#1DA1F2`，悬停 `#168BD2`。文字和图标在浅色、深色模式下统一使用白色；不依赖网站或系统主题。
 - 不改变点击逻辑和禁用状态，不覆盖 Following／Unfollow 的样式。
-- 仅将英文 `Show translation` 按钮前紧邻的 Grok SVG 换成用户提供的地球图标，保留原尺寸、颜色及按钮行为；支持按钮／标签延迟出现，其他 Grok 图标不变。
+- 翻译入口图标识别 X 的全部 45 个显示语言选项对应的官方按钮文案，只替换按钮前紧邻的 Grok SVG；保留原尺寸、颜色及行为，支持延迟出现，其他 Grok 图标不变。
+- 多语言适配进行中：`extension/locales.js` 负责语言代码与翻译入口文案；页面用语和 tab title 暂仍为英文规则。覆盖状态及官方来源见 [多语言核对记录](docs/localization.md)。
 - 图标逻辑在 `extension/content.js`；用语和按钮样式在 `extension/classic-ui.js`、`extension/classic-ui.css`。
 
 ## 标签页标题（英文规则）

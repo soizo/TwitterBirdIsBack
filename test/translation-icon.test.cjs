@@ -102,3 +102,69 @@ test("translation globe handles buttons and labels arriving after their SVG", as
     /^M18 0C8\.059/,
   );
 });
+
+test("translation icons support every official display language without matching unrelated Grok labels", async (t) => {
+  const observed = require("./fixtures/x-locales.json");
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  t.after(() => browser.close());
+  const page = await browser.newPage();
+  await page.setContent("<main></main><nav></nav>");
+  const labels = observed.flatMap((locale) =>
+    locale.translationLabels.map((label) => ({
+      language: locale.language,
+      label,
+    })),
+  );
+  await page.evaluate(
+    ({ labels, icon }) => {
+      labels.forEach(({ language, label }, index) => {
+        const row = document.createElement("div");
+        row.id = `locale-${index}`;
+        row.lang = language;
+        row.innerHTML = icon;
+        const button = document.createElement("button");
+        button.setAttribute("aria-label", label);
+        button.textContent = label;
+        row.append(button);
+        document.querySelector("main").append(row);
+      });
+      document.querySelector("nav").innerHTML =
+        icon + '<button aria-label="Grok">Grok</button>';
+    },
+    { labels, icon },
+  );
+  await page.addScriptTag({
+    path: path.resolve(__dirname, "../extension/locales.js"),
+  });
+  await page.addScriptTag({
+    path: path.resolve(__dirname, "../extension/content.js"),
+  });
+  for (const [index, { language }] of labels.entries()) {
+    assert.equal(
+      await page.locator(`#locale-${index} svg`).getAttribute("viewBox"),
+      "0 0 36 36",
+      language,
+    );
+    assert.match(
+      await page.locator(`#locale-${index} path`).getAttribute("d"),
+      /^M18 0C8\.059/,
+      language,
+    );
+  }
+  assert.equal(await page.locator("nav path").getAttribute("d"), grok);
+  await page.evaluate((icon) => {
+    const row = document.createElement("div");
+    row.id = "late-japanese";
+    row.innerHTML = icon;
+    document.body.append(row);
+  }, icon);
+  await page.locator("#late-japanese").evaluate((row) => {
+    const button = document.createElement("button");
+    button.setAttribute("aria-label", "翻訳を表示");
+    row.append(button);
+  });
+  assert.equal(
+    await page.locator("#late-japanese svg").getAttribute("viewBox"),
+    "0 0 36 36",
+  );
+});
