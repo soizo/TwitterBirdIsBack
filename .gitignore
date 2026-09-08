@@ -1,0 +1,6 @@
+node_modules/
+.pi/
+.playwright-mcp/
+test-results/
+playwright-report/
+.DS_Store

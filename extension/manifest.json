@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Twitter Bird Is Back",
+  "version": "0.1.0",
+  "description": "Replace X brand logos with the blue bird on x.com.",
+  "content_scripts": [
+    {
+      "matches": ["https://x.com/*", "https://www.x.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

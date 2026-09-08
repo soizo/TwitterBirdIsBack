@@ -1,0 +1,12 @@
+{
+  "name": "twitter-bird-is-back",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bring the blue bird back to x.com in Chrome and Firefox.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}
