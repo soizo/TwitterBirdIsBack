@@ -4,7 +4,8 @@
   "private": true,
   "description": "Bring the blue bird back to x.com in Chrome and Firefox.",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "build": "node -e \"require('node:fs').cpSync('extension', 'dist', { recursive: true })\""
   },
   "devDependencies": {
     "playwright": "^1.63.0"
