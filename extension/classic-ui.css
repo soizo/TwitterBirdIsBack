@@ -1,0 +1,17 @@
+:is(
+  [data-testid="SideNav_NewTweet_Button"],
+  [data-testid="tweetButtonInline"],
+  [data-testid="tweetButton"],
+  button[data-testid$="-follow"]
+) {
+  background-color: #1da1f2 !important;
+  color: #ffffff !important;
+
+  & * {
+    color: inherit !important;
+  }
+
+  &:hover:not(:disabled):not([aria-disabled="true"]) {
+    background-color: #168bd2 !important;
+  }
+}

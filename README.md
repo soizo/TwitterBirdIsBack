@@ -1,6 +1,27 @@
 # Twitter Bird Is Back
 
-将 x.com 的 X 品牌 SVG 和 favicon 换回蓝鸟。原生 Manifest V3 扩展，无运行时依赖。
+恢复 x.com 的蓝鸟图标、经典英文用语和蓝色按钮。原生 Manifest V3 扩展，无运行时依赖。
+
+## 经典界面
+
+- 界面控件和状态标签中的 `Post / Posted / Posts` → `Tweet / Tweeted / Tweets`，`Repost / Reposted / Reposts` → `Retweet / Retweeted / Retweets`，保留常见大小写形式，并处理动态加载和重绘。
+- 悬停提示（`HoverLabel`／`role="tooltip"`）、原生 `title` 和无障碍标签同步恢复操作用语，包括 `Undo repost`；任意提示正文不做逐词替换。
+- 详情页及其子页面的主标题同样恢复 Tweet／Tweets／Retweets，支持单页导航和重绘；资料页标题不纳入替换，避免改写用户显示名。
+- 不做整页文字替换；跳过推文正文、已识别的用户名／用户资料区域和输入内容。未识别的界面区域可能仍显示新用语。
+- 侧栏与编辑框发帖按钮、Follow 按钮：背景 `#1DA1F2`，悬停 `#168BD2`。文字和图标在浅色、深色模式下统一使用白色；不依赖网站或系统主题。
+- 不改变点击逻辑和禁用状态，不覆盖 Following／Unfollow 的样式。
+- 仅将英文 `Show translation` 按钮前紧邻的 Grok SVG 换成用户提供的地球图标，保留原尺寸、颜色及按钮行为；支持按钮／标签延迟出现，其他 Grok 图标不变。
+- 图标逻辑在 `extension/content.js`；用语和按钮样式在 `extension/classic-ui.js`、`extension/classic-ui.css`。
+
+## 标签页标题（英文规则）
+
+规则独立放在 `extension/title.js`，未来按语言扩展结构规则，不做全文词语替换。
+
+- `(8) Home / X` → `(8) Home / Twitter`，保留未读数量。
+- `Post / X` → `Tweet / Twitter`；固定页面名也覆盖 Posted／Posts／Repost／Reposted／Reposts。
+- `Alice on X: "I use X" / X` → `Alice on Twitter: "I use X" / Twitter`，不改引号内正文。
+- 用户名、搜索词不做逐词替换。若内文包含多个 `on X: "` 分隔符，保留歧义部分，只恢复末尾站名。
+- 支持初次加载、未读数更新、单页导航和标题节点重建。
 
 ## 本地开发
 
@@ -12,6 +33,8 @@ npm test && npm run build
 
 每轮修改都先通过测试，再构建 `dist/`，供浏览器加载预览。DOM 测试使用本机安装的 Google Chrome；启动屏测试使用 Playwright Chromium，在隔离配置中真实加载扩展，并阻塞测试页面加载来检查启动阶段。
 
+修改用语时按界面位置逐项检查：按钮正文、详情标题、菜单／撤销状态、真实 hover 提示、原生 `title`、无障碍标签和 tab title；覆盖动态出现与重绘，并保留正文、用户名、搜索词的反例测试。不要只检查按钮正文就视为完成。
+
 ## 加载与更新
 
 - **Chrome**：打开 `chrome://extensions`，开启开发者模式，点击「加载已解压的扩展程序」，选择本项目的 `dist/`。
@@ -20,7 +43,7 @@ npm test && npm run build
 
 ## 当前范围
 
-- 浏览器回归测试：初始和动态插入的品牌 SVG、启动屏、favicon 图片解码，以及网站改写 favicon 地址、类型和尺寸后的恢复。
+- 浏览器回归测试：初始和动态插入的品牌 SVG、启动屏、favicon 图片解码及防改回、用语替换与用户内容保护、按钮明暗主题／悬停／禁用态。
 - 保留普通关闭按钮、首页链接和非 favicon 的 head 链接。
 - favicon 固定显示蓝鸟，不保留网站叠加在图标上的未读标记。
 - 尚未覆盖：已有 SVG 被页面重绘还原，以及其他形状的 X 品牌图标。

@@ -80,8 +80,9 @@ test("installed extension replaces the splash logo before page loading finishes"
     }
     await route.fulfill({
       contentType: "text/html",
-      body: `<!doctype html><html><head><title>Startup fixture</title></head><body>
+      body: `<!doctype html><html><head><title>(8) Post / X</title></head><body>
         <div id="placeholder"><svg viewBox="0 0 24 24" width="48" height="48"><path d="${xLogo}"></path></svg></div>
+        <button data-testid="tweetButtonInline" aria-label="Post"><span>Post</span></button>
         <script src="/boot.js"></script>
       </body></html>`,
     });
@@ -107,6 +108,18 @@ test("installed extension replaces the splash logo before page loading finishes"
   );
   assert.equal(splash.fill, "rgb(29, 155, 240)");
   assert.notEqual(splash.shape, xLogo);
+  assert.equal(await page.title(), "(8) Tweet / Twitter");
+  assert.equal(await page.locator("button").textContent(), "Tweet");
+  assert.equal(
+    await page.locator("button").getAttribute("aria-label"),
+    "Tweet",
+  );
+  assert.equal(
+    await page
+      .locator("button")
+      .evaluate((node) => getComputedStyle(node).backgroundColor),
+    "rgb(29, 161, 242)",
+  );
 });
 
 test("favicon becomes a locally loadable blue bird without changing other head links", async (t) => {

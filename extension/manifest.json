@@ -6,7 +6,8 @@
   "content_scripts": [
     {
       "matches": ["https://x.com/*", "https://www.x.com/*"],
-      "js": ["content.js"],
+      "js": ["content.js", "classic-ui.js", "title.js"],
+      "css": ["classic-ui.css"],
       "run_at": "document_start"
     }
   ]

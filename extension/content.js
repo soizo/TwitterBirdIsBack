@@ -4,12 +4,35 @@
   const bird =
     "M23.643 4.937a9.65 9.65 0 0 1-2.825.775 4.958 4.958 0 0 0 2.163-2.723 9.99 9.99 0 0 1-3.127 1.195 4.916 4.916 0 0 0-8.384 4.482A13.944 13.944 0 0 1 1.64 3.162a4.916 4.916 0 0 0 1.523 6.558 4.903 4.903 0 0 1-2.229-.616v.061a4.917 4.917 0 0 0 3.946 4.818 4.935 4.935 0 0 1-2.224.084 4.923 4.923 0 0 0 4.6 3.419A9.869 9.869 0 0 1 0 19.523a13.94 13.94 0 0 0 7.548 2.212c9.057 0 14.01-7.503 14.01-14.01 0-.213-.005-.425-.014-.636a10.012 10.012 0 0 0 2.46-2.548l-.047-.02z";
 
+  const GLOBE_PATH =
+    "M18 0C8.059 0 0 8.059 0 18s8.059 18 18 18 18-8.059 18-18S27.941 0 18 0z" +
+    "M2.05 19h3.983c.092 2.506.522 4.871 1.229 7H4.158c-1.207-2.083-1.95-4.459-2.108-7z" +
+    "M19 8V2.081c2.747.436 5.162 2.655 6.799 5.919H19zm7.651 2c.754 2.083 1.219 4.46 1.317 7H19v-7h7.651z" +
+    "M17 2.081V8h-6.799C11.837 4.736 14.253 2.517 17 2.081zM17 10v7H8.032c.098-2.54.563-4.917 1.317-7H17z" +
+    "M6.034 17H2.05c.158-2.54.901-4.917 2.107-7h3.104c-.705 2.129-1.135 4.495-1.227 7z" +
+    "m1.998 2H17v7H9.349c-.754-2.083-1.219-4.459-1.317-7z" +
+    "M17 28v5.919c-2.747-.437-5.163-2.655-6.799-5.919H17z" +
+    "m2 5.919V28h6.8c-1.637 3.264-4.053 5.482-6.8 5.919z" +
+    "M19 26v-7h8.969c-.099 2.541-.563 4.917-1.317 7H19z" +
+    "m10.967-7h3.982c-.157 2.541-.9 4.917-2.107 7h-3.104c.706-2.129 1.136-4.494 1.229-7z" +
+    "m0-2c-.093-2.505-.523-4.871-1.229-7h3.104c1.207 2.083 1.95 4.46 2.107 7h-3.982z" +
+    "m.512-9h-2.503c-.717-1.604-1.606-3.015-2.619-4.199C27.346 4.833 29.089 6.267 30.479 8z" +
+    "M10.643 3.801C9.629 4.985 8.74 6.396 8.023 8H5.521c1.39-1.733 3.133-3.166 5.122-4.199z" +
+    "M5.521 28h2.503c.716 1.604 1.605 3.015 2.619 4.198C8.654 31.166 6.911 29.733 5.521 28z" +
+    "m19.836 4.198c1.014-1.184 1.902-2.594 2.619-4.198h2.503c-1.39 1.733-3.133 3.166-5.122 4.198z";
+
   const favicon = `data:image/svg+xml,${encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="#1d9bf0" d="${bird}"/></svg>`,
   )}`;
 
   function replaceIcons(root) {
     if (root.nodeType !== Node.ELEMENT_NODE) return;
+    if (
+      root.matches('button[aria-label="Show translation"]') &&
+      root.previousElementSibling?.matches("svg")
+    ) {
+      replaceIcons(root.previousElementSibling);
+    }
     const icons = root.matches('link[rel~="icon" i]')
       ? [root]
       : root.querySelectorAll('link[rel~="icon" i]');
@@ -25,16 +48,30 @@
       : root.querySelectorAll("svg path");
     // ponytail: exact current X logo only; add observed variants when X changes its artwork.
     for (const path of paths) {
-      if (path.getAttribute("d") !== xLogo) continue;
-      path.setAttribute("d", bird);
-      path.style.fill = "#1d9bf0";
+      if (path.getAttribute("d") === xLogo) {
+        path.setAttribute("d", bird);
+        path.style.fill = "#1d9bf0";
+      }
+      const svg = path.ownerSVGElement;
+      if (
+        svg?.nextElementSibling?.matches(
+          'button[aria-label="Show translation"]',
+        ) &&
+        path.getAttribute("d") !== GLOBE_PATH
+      ) {
+        path.setAttribute("d", GLOBE_PATH);
+        svg.setAttribute("viewBox", "0 0 36 36");
+      }
     }
   }
 
   replaceIcons(document.documentElement);
   new MutationObserver((records) => {
     for (const record of records) {
-      if (record.type === "attributes" && record.target.matches("link")) {
+      if (
+        record.type === "attributes" &&
+        record.target.matches('link, button[aria-label="Show translation"]')
+      ) {
         replaceIcons(record.target);
       }
       for (const node of record.addedNodes) replaceIcons(node);
@@ -43,6 +80,6 @@
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["href", "type", "sizes"],
+    attributeFilter: ["href", "type", "sizes", "aria-label"],
   });
 })();
