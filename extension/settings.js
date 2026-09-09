@@ -6,6 +6,8 @@
     buttons: true,
     translation: true,
     title: true,
+    hideGrok: false,
+    hideDrawers: false,
   };
   const api = globalThis.browser ?? globalThis.chrome;
   let snapshot;

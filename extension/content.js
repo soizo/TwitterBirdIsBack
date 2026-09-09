@@ -2,11 +2,43 @@
   const settings = globalThis.TwitterBirdSettings
     ? await globalThis.TwitterBirdSettings.load().catch(() => null)
     : { enabled: true, bird: true, buttons: true, translation: true };
-  document.documentElement.setAttribute(
-    "data-twitter-bird-buttons",
-    settings?.enabled && settings.buttons ? "on" : "off",
-  );
-  if (!settings?.enabled || (!settings.bird && !settings.translation)) return;
+  for (const [attribute, key] of [
+    ['buttons', 'buttons'], ['hide-grok', 'hideGrok'], ['hide-drawers', 'hideDrawers'],
+  ]) {
+    document.documentElement.setAttribute(`data-twitter-bird-${attribute}`,
+      settings?.enabled && settings[key] ? 'on' : 'off');
+  }
+  if (!settings?.enabled || (!settings.bird && !settings.translation && !settings.hideGrok)) return;
+
+  const interactive = 'a[href], button, [role="button"], [role="menuitem"]';
+  const entryCandidates = `${interactive}, [data-twitter-bird-grok-entry]`;
+  const userContent = '[data-testid="tweetText"], [data-testid="User-Name"], [data-testid="UserName"], [data-testid="UserDescription"], [data-testid="UserCell"], input, textarea, select, [contenteditable]:not([contenteditable="false"])';
+
+  function markGrokEntry(element) {
+    if (!element) return;
+    const label = element.getAttribute('aria-label') || element.getAttribute('title') || element.textContent;
+    let grok = false;
+    if (element.matches(interactive) && !element.closest(userContent) && !globalThis.TwitterBirdLocales?.isTranslationLabel(label)) {
+      if (element.matches('a[href]')) {
+        // /grok is a user profile, not the /i/grok AI route.
+        const interfaceLink = element.matches('[role="button"], [role="menuitem"]') ||
+          element.closest('nav, [role="navigation"], [role="menu"], [data-testid="tweet"], [data-testid="HoverCard"], [data-testid="sidebarColumn"]');
+        grok = !!interfaceLink && (/^(?:https:\/\/(?:www\.)?x\.com)?\/i\/grok(?:[/?#]|$)/.test(element.getAttribute('href')) ||
+          /^https:\/\/(?:www\.)?grok\.com(?:[/?#]|$)/.test(element.getAttribute('href')));
+      } else {
+        // ponytail: observed Grok SVG prefix; add verified variants if X changes its artwork.
+        grok = element.getAttribute('data-testid') === 'grokImgGen' ||
+          !!globalThis.TwitterBirdLocales?.isGrokLabel(label) ||
+          !!element.querySelector('svg path[d^="M12.745 20.54l10.97-8.19"]');
+      }
+    }
+    element.toggleAttribute('data-twitter-bird-grok-entry', grok);
+  }
+
+  function markGrokEntries(root) {
+    markGrokEntry(root.closest(entryCandidates));
+    for (const element of root.querySelectorAll(entryCandidates)) markGrokEntry(element);
+  }
 
   const xLogo =
     "M21.742 21.75l-7.563-11.179 7.056-8.321h-2.456l-5.691 6.714-4.54-6.714H2.359l7.29 10.776L2.25 21.75h2.456l6.035-7.118 4.818 7.118h6.191-.008zM7.739 3.818L18.81 20.182h-2.447L5.29 3.818h2.447z";
@@ -44,7 +76,12 @@
   }
 
   function replaceIcons(root) {
+    if (root.nodeType === Node.TEXT_NODE) {
+      if (settings.hideGrok && root.parentElement) markGrokEntries(root.parentElement);
+      return;
+    }
     if (root.nodeType !== Node.ELEMENT_NODE) return;
+    if (settings.hideGrok) markGrokEntries(root);
     if (
       isTranslationButton(root) &&
       root.previousElementSibling?.matches("svg")
@@ -90,16 +127,21 @@
     for (const record of records) {
       if (
         record.type === "attributes" &&
-        (record.target.matches("link") || isTranslationButton(record.target))
+        (settings.hideGrok || record.target.matches("link") || isTranslationButton(record.target))
       ) {
         replaceIcons(record.target);
       }
+      if (settings.hideGrok && record.type === 'childList') {
+        markGrokEntry(record.target.closest(entryCandidates));
+      }
+      if (record.type === 'characterData') replaceIcons(record.target);
       for (const node of record.addedNodes) replaceIcons(node);
     }
   }).observe(document.documentElement, {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["href", "type", "sizes", "aria-label"],
+    characterData: !!settings.hideGrok,
+    attributeFilter: ["href", "type", "sizes", "aria-label", "title", "role", "data-testid", "contenteditable", "d"],
   });
 })();

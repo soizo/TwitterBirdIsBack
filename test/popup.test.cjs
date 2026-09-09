@@ -231,3 +231,72 @@ test("popup reports its intended width even when the initial browser viewport is
     320,
   );
 });
+
+test('Grok and floating-drawer options are independent and preserve ordinary chat, translation and user content', {timeout:30000}, async t => {
+  const {context, popup, popupURL} = await install(t);
+  assert.equal(await popup.locator('input[name=hideGrok], input[name=hideDrawers]').count(), 2, 'both optional visibility settings must exist');
+  for (const name of ['hideGrok', 'hideDrawers']) assert.equal(await popup.locator(`input[name=${name}]`).isChecked(), false);
+  await context.route('https://x.com/**', route => route.fulfill({contentType:'text/html; charset=utf-8',body:`<!doctype html><html><body>
+    <nav><a id="grok-nav" href="/i/grok">Grok</a><a id="chat-nav" href="/i/chat">Chat</a></nav>
+    <div data-testid="tweet"><button id="grok-actions" aria-label="Grok actions">Grok</button>
+      <button id="grok-ja" aria-label="Grokのアクション">Grok</button>
+      <button id="summary" aria-label="Profile Summary">Summary</button>
+      <a id="ask-grok" href="/i/grok?text=hello">Ask Grok</a>
+      <div data-testid="followups_123">Suggested Grok prompts</div>
+      <div data-testid="tweetText"><a id="user-link" href="/i/grok">Grok</a> I like Grok and Chat.</div>
+    </div>
+    <button id="icon-only"><svg><path d="M12.745 20.54l10.97-8.19"></path></svg></button>
+    <div data-testid="UserCell" role="button" aria-label="Grok" id="user-cell">Grok</div>
+    <button id="image" data-testid="grokImgGen">Generate image</button>
+    <button id="translate" aria-label="Show translation">Show translation</button>
+    <button id="follow" aria-label="Follow @Grok">Follow</button>
+    <a id="grok-profile" href="/grok">Grok's profile</a>
+    <div data-testid="messageEntry"><a id="message-link" href="/i/grok">Grok</a></div>
+    <div data-testid="GrokDrawer"><button>Grok</button></div>
+    <div data-testid="chat-drawer-root"><button>Chat</button></div>
+    <div data-testid="DMDrawer"><button>Messages</button></div>
+    </body></html>`}));
+  const page = await context.newPage();
+  await page.goto('https://x.com/home');
+  assert.equal(await page.locator('#grok-ja').getAttribute('aria-label'), 'Grokのアクション', 'fixture encoding must preserve official labels');
+  const visible = async selector => {
+    await page.waitForFunction(() => document.documentElement.hasAttribute('data-twitter-bird-hide-grok'));
+    return page.locator(selector).isVisible();
+  };
+  await toggle(popup, 'hideDrawers', true);
+  assert.equal(await visible('[data-testid=GrokDrawer]'), true, 'existing pages must not change before reload');
+  await page.reload();
+  for (const id of ['GrokDrawer', 'chat-drawer-root', 'DMDrawer']) assert.equal(await visible(`[data-testid=${id}]`), false, id);
+  for (const id of ['grok-nav', 'chat-nav', 'grok-actions']) assert.equal(await visible(`#${id}`), true, id);
+  await toggle(popup, 'hideDrawers', false);
+  await toggle(popup, 'hideGrok', true);
+  await page.reload();
+  for (const selector of ['#grok-nav', '#grok-actions', '#grok-ja', '#summary', '#ask-grok', '#image', '#icon-only', '[data-testid=GrokDrawer]' , '[data-testid=followups_123]']) assert.equal(await visible(selector), false, selector);
+  for (const selector of ['#chat-nav', '#translate', '#follow', '#grok-profile', '#user-link', '#user-cell', '#message-link', '[data-testid=chat-drawer-root]', '[data-testid=DMDrawer]']) assert.equal(await visible(selector), true, selector);
+  await page.evaluate(() => {
+    const button = document.createElement('button'); button.id = 'late-grok'; button.setAttribute('aria-label', 'Grok actions'); document.body.append(button);
+  });
+  assert.equal(await visible('#late-grok'), false);
+  await page.locator('#late-grok').evaluate(button => { button.setAttribute('aria-label','Follow @Grok'); button.textContent='Follow'; });
+  assert.equal(await visible('#late-grok'), true, 'reused controls must not stay hidden');
+  await page.locator('#icon-only path').evaluate(path => path.remove());
+  assert.equal(await visible('#icon-only'), true, 'removing a Grok icon must restore a reused button');
+  await page.evaluate(() => {
+    const item = document.createElement('div'); item.id='role-only'; item.setAttribute('role','button'); item.setAttribute('aria-label','Grok actions'); item.textContent='Grok actions'; document.body.append(item);
+  });
+  assert.equal(await visible('#role-only'), false);
+  await page.locator('#role-only').evaluate(node => node.removeAttribute('role'));
+  assert.equal(await visible('#role-only'), true, 'a node that is no longer a control must not stay hidden');
+  // Visibility settings must still run if all original modification groups are off.
+  await popup.evaluate(() => chrome.storage.local.set({bird:false, terms:false, buttons:false, translation:false, title:false, hideGrok:true, hideDrawers:true}));
+  await page.reload();
+  assert.equal(await visible('#grok-nav'), false);
+  assert.equal(await visible('[data-testid=chat-drawer-root]'), false);
+  await popup.goto(popupURL);
+  await popup.locator('input[name=enabled]:enabled').waitFor();
+  assert.equal(await popup.locator('input[name=hideGrok]').isChecked(), true);
+  assert.equal(await popup.locator('input[name=hideDrawers]').isChecked(), true);
+  await toggle(popup, 'enabled', false);
+  await page.reload();
+  for (const selector of ['#grok-nav', '#grok-actions', '[data-testid=GrokDrawer]', '[data-testid=chat-drawer-root]']) assert.equal(await visible(selector), true, selector);
+});

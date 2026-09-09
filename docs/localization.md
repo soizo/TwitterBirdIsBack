@@ -62,6 +62,14 @@ Representative identifiers:
 
 New notification coverage is limited to `[data-testid="toast"]` and `[role="alert"]`. Complete-message matching avoids rewriting interpolated usernames in unknown alerts. Matching tolerates case, whitespace, apostrophe style, and a terminal punctuation mark without changing those in the displayed text. User-content exclusions still apply. This is coverage of the checked messages, not a guarantee about future or arbitrary notifications. Tests use local DOM fixtures; no posts were published to exercise the confirmation.
 
+## Optional Grok entry-point hiding
+
+The same 45 official locale bundles supply exact `e3eceda6` (Grok actions) and `fc7db594` (Profile Summary) labels. `isGrokLabel` trims their boundary whitespace; it never uses a broad `Grok` substring match. Additional English labels come from `h5860a68`, `dc0c8266`, `d6827e80`, `f8047ea8`, and `a3879dea`. This is current-label identification, not historical translation coverage.
+
+Drawer and control identifiers were cross-checked against the author's [Control Panel for Twitter source](https://github.com/insin/control-panel-for-twitter/blob/master/script.js): `GrokDrawer`, `DMDrawer`, `chat-drawer-root`, `grokImgGen`, `followups_*`, and the `/i/grok` route. This is third-party selector evidence, not a fresh inspection of the user's authenticated X DOM. Icon-only controls use the observed Grok SVG prefix already captured for the translation-icon tests. Ordinary translation controls and user-content regions are excluded; `/grok` is a user profile and is not the AI route.
+
+Both hiding options default off and use the existing refresh-only settings snapshot. Regression tests load the actual extension against local page fixtures; live account layouts may introduce additional variants.
+
 ## Historical English terminology evidence
 
 Fetched directly from the official CDN, as text only:
