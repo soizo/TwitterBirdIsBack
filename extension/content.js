@@ -3,41 +3,68 @@
     ? await globalThis.TwitterBirdSettings.load().catch(() => null)
     : { enabled: true, bird: true, buttons: true, translation: true };
   for (const [attribute, key] of [
-    ['buttons', 'buttons'], ['hide-grok', 'hideGrok'], ['hide-drawers', 'hideDrawers'],
+    ["buttons", "buttons"],
+    ["hide-grok", "hideGrok"],
+    ["hide-drawers", "hideDrawers"],
   ]) {
-    document.documentElement.setAttribute(`data-twitter-bird-${attribute}`,
-      settings?.enabled && settings[key] ? 'on' : 'off');
+    document.documentElement.setAttribute(
+      `data-twitter-bird-${attribute}`,
+      settings?.enabled && settings[key] ? "on" : "off",
+    );
   }
-  if (!settings?.enabled || (!settings.bird && !settings.translation && !settings.hideGrok)) return;
+  if (
+    !settings?.enabled ||
+    (!settings.bird && !settings.translation && !settings.hideGrok)
+  )
+    return;
 
   const interactive = 'a[href], button, [role="button"], [role="menuitem"]';
   const entryCandidates = `${interactive}, [data-twitter-bird-grok-entry]`;
-  const userContent = '[data-testid="tweetText"], [data-testid="User-Name"], [data-testid="UserName"], [data-testid="UserDescription"], [data-testid="UserCell"], input, textarea, select, [contenteditable]:not([contenteditable="false"])';
+  const userContent =
+    '[data-testid="tweetText"], [data-testid="User-Name"], [data-testid="UserName"], [data-testid="UserDescription"], [data-testid="UserCell"], input, textarea, select, [contenteditable]:not([contenteditable="false"])';
 
   function markGrokEntry(element) {
     if (!element) return;
-    const label = element.getAttribute('aria-label') || element.getAttribute('title') || element.textContent;
+    const label =
+      element.getAttribute("aria-label") ||
+      element.getAttribute("title") ||
+      element.textContent;
     let grok = false;
-    if (element.matches(interactive) && !element.closest(userContent) && !globalThis.TwitterBirdLocales?.isTranslationLabel(label)) {
-      if (element.matches('a[href]')) {
+    if (
+      element.matches(interactive) &&
+      !element.closest(userContent) &&
+      !globalThis.TwitterBirdLocales?.isTranslationLabel(label)
+    ) {
+      if (element.matches("a[href]")) {
         // /grok is a user profile, not the /i/grok AI route.
-        const interfaceLink = element.matches('[role="button"], [role="menuitem"]') ||
-          element.closest('nav, [role="navigation"], [role="menu"], [data-testid="tweet"], [data-testid="HoverCard"], [data-testid="sidebarColumn"]');
-        grok = !!interfaceLink && (/^(?:https:\/\/(?:www\.)?x\.com)?\/i\/grok(?:[/?#]|$)/.test(element.getAttribute('href')) ||
-          /^https:\/\/(?:www\.)?grok\.com(?:[/?#]|$)/.test(element.getAttribute('href')));
+        const interfaceLink =
+          element.matches('[role="button"], [role="menuitem"]') ||
+          element.closest(
+            'nav, [role="navigation"], [role="menu"], [data-testid="tweet"], [data-testid="HoverCard"], [data-testid="sidebarColumn"]',
+          );
+        grok =
+          !!interfaceLink &&
+          (/^(?:https:\/\/(?:www\.)?x\.com)?\/i\/grok(?:[/?#]|$)/.test(
+            element.getAttribute("href"),
+          ) ||
+            /^https:\/\/(?:www\.)?grok\.com(?:[/?#]|$)/.test(
+              element.getAttribute("href"),
+            ));
       } else {
         // ponytail: observed Grok SVG prefix; add verified variants if X changes its artwork.
-        grok = element.getAttribute('data-testid') === 'grokImgGen' ||
+        grok =
+          element.getAttribute("data-testid") === "grokImgGen" ||
           !!globalThis.TwitterBirdLocales?.isGrokLabel(label) ||
           !!element.querySelector('svg path[d^="M12.745 20.54l10.97-8.19"]');
       }
     }
-    element.toggleAttribute('data-twitter-bird-grok-entry', grok);
+    element.toggleAttribute("data-twitter-bird-grok-entry", grok);
   }
 
   function markGrokEntries(root) {
     markGrokEntry(root.closest(entryCandidates));
-    for (const element of root.querySelectorAll(entryCandidates)) markGrokEntry(element);
+    for (const element of root.querySelectorAll(entryCandidates))
+      markGrokEntry(element);
   }
 
   const xLogo =
@@ -77,7 +104,8 @@
 
   function replaceIcons(root) {
     if (root.nodeType === Node.TEXT_NODE) {
-      if (settings.hideGrok && root.parentElement) markGrokEntries(root.parentElement);
+      if (settings.hideGrok && root.parentElement)
+        markGrokEntries(root.parentElement);
       return;
     }
     if (root.nodeType !== Node.ELEMENT_NODE) return;
@@ -127,14 +155,16 @@
     for (const record of records) {
       if (
         record.type === "attributes" &&
-        (settings.hideGrok || record.target.matches("link") || isTranslationButton(record.target))
+        (settings.hideGrok ||
+          record.target.matches("link") ||
+          isTranslationButton(record.target))
       ) {
         replaceIcons(record.target);
       }
-      if (settings.hideGrok && record.type === 'childList') {
+      if (settings.hideGrok && record.type === "childList") {
         markGrokEntry(record.target.closest(entryCandidates));
       }
-      if (record.type === 'characterData') replaceIcons(record.target);
+      if (record.type === "characterData") replaceIcons(record.target);
       for (const node of record.addedNodes) replaceIcons(node);
     }
   }).observe(document.documentElement, {
@@ -142,6 +172,16 @@
     subtree: true,
     attributes: true,
     characterData: !!settings.hideGrok,
-    attributeFilter: ["href", "type", "sizes", "aria-label", "title", "role", "data-testid", "contenteditable", "d"],
+    attributeFilter: [
+      "href",
+      "type",
+      "sizes",
+      "aria-label",
+      "title",
+      "role",
+      "data-testid",
+      "contenteditable",
+      "d",
+    ],
   });
 })();

@@ -1,10 +1,15 @@
 /* Native CSS also handles drawers inserted after the page has loaded. */
 html[data-twitter-bird-hide-drawers="on"]
-  :is([data-testid="GrokDrawer"], [data-testid="DMDrawer"], [data-testid^="chat-drawer-root"]),
+:is(
+  [data-testid="GrokDrawer"],
+  [data-testid="DMDrawer"],
+  [data-testid^="chat-drawer-root"]
+),
 html[data-twitter-bird-hide-grok="on"]
   :is([data-testid="GrokDrawer"], [data-twitter-bird-grok-entry]),
 html[data-twitter-bird-hide-grok="on"]
-  [data-testid="tweet"] [data-testid^="followups_"] {
+  [data-testid="tweet"]
+  [data-testid^="followups_"] {
   display: none !important;
 }
 
