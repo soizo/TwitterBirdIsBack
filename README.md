@@ -94,3 +94,7 @@ node scripts/build-icons.cjs
 - 开启蓝鸟分项时，favicon 固定显示蓝鸟，不保留网站叠加在图标上的未读标记。
 - 尚未覆盖：已有 SVG 被页面重绘还原，以及其他形状的 X 品牌图标。
 - 启动屏已通过 Chromium 真实加载扩展测试，并获得用户实站反馈；Firefox 兼容性和浏览器标签栏 favicon 外观仍需人工验证。
+
+## 许可证
+
+[MIT](LICENSE)

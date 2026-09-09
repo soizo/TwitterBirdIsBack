@@ -1,6 +1,6 @@
 {
   "name": "twitter-bird-is-back",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Restore classic Twitter in Chrome and Firefox.",
   "scripts": {
