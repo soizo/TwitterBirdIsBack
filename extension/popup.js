@@ -1,45 +1,9 @@
 (async () => {
-    const chinese = navigator.language.toLowerCase().startsWith("zh");
-    const copy = chinese
-        ? {
-              enabled: "启用修改",
-              legend: "修改项目",
-              bird: "蓝鸟与网站图标",
-              terms: "旧版操作用语",
-              buttons: "经典蓝色按钮",
-              translation: "翻译地球图标",
-              title: "标签页标题",
-              hideGrok: "隐藏所有 Grok 入口",
-              hideDrawers: "隐藏右下角 Grok 和 Chat",
-              scope: "操作用语和标题目前仅支持英文。",
-              hint: "统一应用于所有 X 页面，手动刷新后生效。",
-              loading: "正在读取设置…",
-              ready: "更改将自动保存。",
-              saving: "正在保存…",
-              saved: "已保存。",
-              error: "保存失败，请重试。",
-              loadError: "无法读取设置，请重新打开弹窗。",
-          }
-        : {
-              enabled: "Enable modifications",
-              legend: "Modifications",
-              bird: "Blue bird & site icon",
-              terms: "Classic wording",
-              buttons: "Classic blue buttons",
-              translation: "Translation globe",
-              title: "Tab titles",
-              hideGrok: "Hide all Grok entry points",
-              hideDrawers: "Hide bottom-right Grok & Chat",
-              scope: "Wording and titles: English only for now.",
-              hint: "Applies to all X tabs after you refresh them.",
-              loading: "Loading settings…",
-              ready: "Changes save automatically.",
-              saving: "Saving…",
-              saved: "Saved.",
-              error: "Could not save. Try again.",
-              loadError: "Could not load settings. Reopen this popup.",
-          };
-    document.documentElement.lang = chinese ? "zh-CN" : "en";
+    const messages = globalThis.TwitterBirdPopupMessages;
+    const resolved = globalThis.TwitterBirdLocales.resolve(navigator.language)?.language;
+    const language = resolved === "en-GB" || Object.hasOwn(messages, resolved) ? resolved : "en";
+    const copy = messages[language] ?? messages.en;
+    document.documentElement.lang = {zh: "zh-CN", "zh-Hant": "zh-TW"}[language] ?? language;
     for (const element of document.querySelectorAll("[data-copy]")) {
         element.textContent = copy[element.dataset.copy];
     }
