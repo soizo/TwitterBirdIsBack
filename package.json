@@ -2,7 +2,7 @@
   "name": "twitter-bird-is-back",
   "version": "0.1.1",
   "private": true,
-  "description": "Restore classic Twitter in Chrome and Firefox.",
+  "description": "在 Chrome 和 Firefox 中恢复经典 Twitter 蓝鸟、操作用语和蓝色按钮。",
   "scripts": {
     "test": "node --test",
     "package": "npm run build && python3 scripts/package-extension.py",
