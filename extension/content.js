@@ -69,6 +69,10 @@
       if (settings.bird && path.getAttribute("d") === xLogo) {
         path.setAttribute("d", bird);
         path.style.fill = "#1d9bf0";
+        // Only the loading screen; never override the application's selected theme.
+        path
+          .closest("#placeholder")
+          ?.style.setProperty("background-color", "#fff", "important");
       }
       const svg = path.ownerSVGElement;
       if (

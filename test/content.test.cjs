@@ -80,7 +80,9 @@ test("installed extension replaces the splash logo before page loading finishes"
     }
     await route.fulfill({
       contentType: "text/html",
-      body: `<!doctype html><html><head><title>(8) Post / X</title></head><body>
+      body: `<!doctype html><html><head><title>(8) Post / X</title>
+        <style>body { background: black; } #placeholder { position: fixed; inset: 0; display: grid; place-items: center; background-color: black !important; }</style>
+        </head><body>
         <div id="placeholder"><svg viewBox="0 0 24 24" width="48" height="48"><path d="${xLogo}"></path></svg></div>
         <button data-testid="tweetButtonInline" aria-label="Post"><span>Post</span></button>
         <script src="/boot.js"></script>
@@ -97,6 +99,8 @@ test("installed extension replaces the splash logo before page loading finishes"
     const node = document.querySelector("#placeholder path");
     return {
       state: document.readyState,
+      background: getComputedStyle(document.querySelector("#placeholder"))
+        .backgroundColor,
       fill: getComputedStyle(node).fill,
       shape: node.getAttribute("d"),
     };
@@ -106,8 +110,17 @@ test("installed extension replaces the splash logo before page loading finishes"
     "loading",
     "test must observe the splash before DOMContentLoaded",
   );
+  assert.equal(splash.background, "rgb(255, 255, 255)");
   assert.equal(splash.fill, "rgb(29, 155, 240)");
   assert.notEqual(splash.shape, xLogo);
+  await page.locator("#placeholder").evaluate((node) => node.remove());
+  assert.equal(
+    await page
+      .locator("body")
+      .evaluate((node) => getComputedStyle(node).backgroundColor),
+    "rgb(0, 0, 0)",
+    "the app must keep its original dark background",
+  );
   assert.equal(await page.title(), "(8) Tweet / Twitter");
   assert.equal(await page.locator("button").textContent(), "Tweet");
   assert.equal(

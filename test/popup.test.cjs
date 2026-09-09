@@ -85,7 +85,7 @@ test("popup persists independent choices; existing X pages change only after rel
       contentType: "text/html",
       body: `<!doctype html>
     <html><head><title>(8) Post / X</title><link rel="icon" href="https://x.com/original.ico"></head><body>
-    <svg id="brand"><path d="${xLogo}"></path></svg>
+    <div id="placeholder" style="background-color: black"><svg id="brand"><path d="${xLogo}"></path></svg></div>
     <button id="post" data-testid="tweetButtonInline" aria-label="Post">Post</button>
     <div id="translation"><svg viewBox="0 0 33 32"><path d="M0 0h10v10z"></path></svg><button aria-label="Show translation">Show translation</button></div>
     <div data-testid="tweetText">Post by X</div></body></html>`,
@@ -119,6 +119,12 @@ test("popup persists independent choices; existing X pages change only after rel
       await page.locator("[data-testid=tweetText]").textContent(),
       "Post by X",
     );
+    assert.equal(
+      await page
+        .locator("#placeholder")
+        .evaluate((node) => getComputedStyle(node).backgroundColor),
+      feature === "bird" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)",
+    );
     if (feature === "bird")
       assert.equal(await page.locator("#brand path").getAttribute("d"), xLogo);
     await toggle(popup, feature, true);
@@ -140,6 +146,12 @@ test("popup persists independent choices; existing X pages change only after rel
     translation: false,
     title: false,
   });
+  assert.equal(
+    await page
+      .locator("#placeholder")
+      .evaluate((node) => getComputedStyle(node).backgroundColor),
+    "rgb(0, 0, 0)",
+  );
   // A new popup document must read storage, not an in-memory copy from the last popup.
   await popup.close();
   const reopened = await context.newPage();
