@@ -39,7 +39,7 @@ Selected message identifiers in that snapshot:
 | `a386dc55` | Repost count plus Reposted state; generated function |
 | `d92eb65e`, `jbde7c78` | Show translation |
 
-The current bundle establishes current X wording, not historical Twitter wording. Historical replacement terms still need source checking per locale. Do not execute downloaded bundles as application code or infer safe string boundaries from English word-boundary rules.
+The current bundle establishes current X wording, not historical Twitter wording. Historical terms for the nine priority locale options are now verified below; other locales still need historical evidence. Do not execute downloaded bundles as application code or infer safe string boundaries from English word-boundary rules.
 
 Logged-out requests currently use a different `x-web` application; its bundles should not be assumed to describe the authenticated interface. Only public asset URLs and bounded language/message data belong in research artifacts, never account state or credentials.
 
@@ -69,6 +69,26 @@ The same 45 official locale bundles supply exact `e3eceda6` (Grok actions) and `
 Drawer and control identifiers were cross-checked against the author's [Control Panel for Twitter source](https://github.com/insin/control-panel-for-twitter/blob/master/script.js): `GrokDrawer`, `DMDrawer`, `chat-drawer-root`, `grokImgGen`, `followups_*`, and the `/i/grok` route. This is third-party selector evidence, not a fresh inspection of the user's authenticated X DOM. Icon-only controls use the observed Grok SVG prefix already captured for the translation-icon tests. Ordinary translation controls and user-content regions are excluded; `/grok` is a user profile and is not the AI route.
 
 Both hiding options default off and use the existing refresh-only settings snapshot. Regression tests load the actual extension against local page fixtures; live account layouts may introduce additional variants.
+
+## Historical priority-language resources
+
+The user's first batch is limited to X's actual options: `en`, `en-GB`, `zh`, `zh-Hant`, `ja`, `ko`, `es`, `ru`, and `uk`. Browser regional tags resolve to these existing options rather than creating additional translations. Popup translation and website terminology coverage are tracked separately.
+
+The URLs below were discovered in a [third-party asset index archived on 2023-06-30](https://github.com/fa0311/TwitterInternalAPIDocument/blob/28c44d888ee07cf6f07160d9923a0ee4b10fbcd7/docs/json/ScriptLoadJson.json). Every listed resource was then fetched directly from Twitter's official CDN and parsed as text, never executed. The index date is not a claim about each resource's original release date.
+
+| Locale | Official historical resource | Retweet action (`d6c8514a`) |
+| --- | --- | --- |
+| en | [en.64296fba.js](https://abs.twimg.com/responsive-web/client-web/i18n/en.64296fba.js) | Retweet |
+| en-GB | [en-GB.370d492a.js](https://abs.twimg.com/responsive-web/client-web/i18n/en-GB.370d492a.js) | Retweet |
+| zh | [zh.7483b50a.js](https://abs.twimg.com/responsive-web/client-web/i18n/zh.7483b50a.js) | 转推 |
+| zh-Hant | [zh-Hant.fcfacbea.js](https://abs.twimg.com/responsive-web/client-web/i18n/zh-Hant.fcfacbea.js) | 轉推 |
+| ja | [ja.19bd9f1a.js](https://abs.twimg.com/responsive-web/client-web/i18n/ja.19bd9f1a.js) | リツイート |
+| ko | [ko.8ece0f6a.js](https://abs.twimg.com/responsive-web/client-web/i18n/ko.8ece0f6a.js) | 리트윗 |
+| es | [es.b07ff23a.js](https://abs.twimg.com/responsive-web/client-web/i18n/es.b07ff23a.js) | Retwittear |
+| ru | [ru.5b27460a.js](https://abs.twimg.com/responsive-web/client-web/i18n/ru.5b27460a.js) | Ретвитнуть |
+| uk | [uk.5327ea7a.js](https://abs.twimg.com/responsive-web/client-web/i18n/uk.5327ea7a.js) | Ретвітнути |
+
+Important identifier changes include `df34a454 → bea869b4` (posting action), `fd1e5446 → f3bbbb88` (undo repost), `h4dd544e → dad5a4b8` (sent notice), `a4d3eb67 → f0c37ddb` (author/text title template), and `dfad425d/a386dc55 → i769b0ab/ea9a1f0d` (counted repost labels). Matching only identical identifiers misses these translations. Japanese/Spanish posting verbs are not interchangeable with detail-heading nouns. Russian and Ukrainian counted forms and title grammar also require their own verified rules.
 
 ## Historical English terminology evidence
 
