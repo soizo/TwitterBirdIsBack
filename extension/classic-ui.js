@@ -8,9 +8,11 @@
   const terms = {
     post: "tweet",
     posted: "tweeted",
+    posting: "tweeting",
     posts: "tweets",
     repost: "retweet",
     reposted: "retweeted",
+    reposting: "retweeting",
     reposts: "retweets",
   };
   const controls =
@@ -18,10 +20,92 @@
   const protectedContent =
     'script, style, noscript, textarea, input, select, [contenteditable]:not([contenteditable="false"]), [data-testid="tweetText"], [data-testid="User-Name"], [data-testid="UserName"], [data-testid="UserDescription"], [data-testid="UserCell"]';
   const actionLabel =
-    /^(?:undo\s+)?(?:reposted|reposts|repost|posted|posts|post)$/i;
+    /^(?:undo\s+)?(?:reposting|reposted|reposts|repost|posting|posted|posts|post)$/i;
 
-  function isInterface(element) {
+  const notificationSelector = '[data-testid="toast"], [role="alert"]';
+  // Verified static X messages, not a blanket replacement in arbitrary alerts.
+  // Source: docs/localization.md (official English resource snapshot).
+  const notificationMessages = new Set(
+    [
+      "Your post was sent.",
+      "Your post was sent. You have 30 minutes to make any edits.",
+      "Your post was sent. You have 1 hour to make any edits.",
+      "Your posts were sent.",
+      "Post reposted",
+      "You reposted",
+      "Something went wrong. Try sending your post again in a minute.",
+      "Something went wrong. Try reposting again in a minute.",
+      "Sorry! You have exceeded your post limit. Try reposting again tomorrow",
+      "You have been blocked from reposting this user’s posts at their request.",
+      "You are over the daily limit for sending posts.",
+      "Sorry, that post has been deleted.",
+      "The post you are trying to reply to has been deleted or is not visible to you.",
+      "The post you’re trying to reply to has been deleted",
+      "Your post can’t be updated again.",
+      "Posts can only be edited within the first 30 minutes after they’re published.",
+      "Posts can only be edited within the first 1 hour after they’re published.",
+      "Scheduled post could not be deleted.",
+      "Some unsent posts could not be deleted.",
+      "Your selected unsent posts were deleted.",
+      "Some draft posts could not be deleted.",
+      "Your selected draft posts were deleted.",
+      "Some scheduled posts could not be deleted.",
+      "Your selected scheduled posts were deleted.",
+      "Something went wrong, and the unsent post wasn’t deleted.",
+      "You can’t schedule a post to send in the past.",
+      "You can’t schedule a post more than 18 months in the future.",
+      "Post added to your Bookmarks",
+      "Post removed from your Bookmarks",
+      "Something went wrong. Try bookmarking that post again in a minute.",
+      "Something went wrong. Try removing that post from your bookmarks again in a minute.",
+      "Something went wrong. Try liking your post again in a minute.",
+      "Try unliking your post again in a minute.",
+      "Your post was pinned to your profile.",
+      "Your post was unpinned from your profile",
+      "Your post has been pinned and added to highlights.",
+      "Post reply hidden",
+      "Reply hidden from post",
+      "Reply pinned to post",
+      "Reply unpinned from post",
+      "Unable to pin reply to post",
+      "Unable to unpin reply from post",
+      "You hid this post",
+      "You kept this post",
+      "This post was hidden by a moderator for breaking Community rules",
+      "This member was removed from the Community, so their posts are hidden.",
+      "Posts from this account will now be allowed in your Home timeline.",
+      "You have muted posts from this account.",
+      "Your post was successfully boosted!",
+      "Your post was posted, but we were unable to run the Boost on it. You will not be charged.",
+    ].map(notificationKey),
+  );
+
+  function notificationKey(text) {
+    // Canonicalize only for matching; preserve the displayed punctuation and spacing.
+    // Translating first also recognizes partially restored, multi-node messages.
+    return translate(text)
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .replaceAll("’", "'")
+      .replace(/[.!]$/, "");
+  }
+
+  function isNotification(element, text) {
+    const notification = element.closest(notificationSelector);
+    if (!notification) return false;
+    if (text && notificationMessages.has(notificationKey(text))) return true;
+    for (let part = element; part; part = part.parentElement) {
+      if (notificationMessages.has(notificationKey(part.textContent)))
+        return true;
+      if (part === notification) break;
+    }
+    return false;
+  }
+
+  function isInterface(element, text) {
     if (!element || element.closest(protectedContent)) return false;
+    if (isNotification(element, text)) return true;
     const tooltip = element.closest(
       '[data-testid="HoverLabel"], [role="tooltip"]',
     );
@@ -36,7 +120,7 @@
 
   function translate(text) {
     return text.replace(
-      /\b(?:reposted|reposts|repost|posted|posts|post)\b/gi,
+      /\b(?:reposting|reposted|reposts|repost|posting|posted|posts|post)\b/gi,
       (word) => {
         const replacement = terms[word.toLowerCase()];
         if (word === word.toUpperCase()) return replacement.toUpperCase();
@@ -48,28 +132,39 @@
   }
 
   function restoreText(node) {
-    if (!isInterface(node.parentElement)) return;
+    if (!isInterface(node.parentElement, node.nodeValue)) return;
     const text = translate(node.nodeValue);
     if (text !== node.nodeValue) node.nodeValue = text;
   }
 
   function restoreLabel(element) {
-    if (!isInterface(element)) return;
+    if (element.closest(protectedContent)) return;
+    const notification = element.closest(notificationSelector);
     for (const attribute of ["aria-label", "title"]) {
       const label = element.getAttribute(attribute);
       if (!label) continue;
-      // Native hints must be complete action labels, not names or arbitrary prose.
-      // Accessible names may also contain action counts, e.g. "9 reposts. Repost".
-      if (
-        !actionLabel.test(label.trim()) &&
-        !(
-          attribute === "aria-label" &&
-          /^(?:[\d.,]+\s+)?(?:reposted|reposts|repost|posted|posts|post)\b/i.test(
-            label,
+      if (notification) {
+        // Never rewrite a username embedded in an accessible name or native hint.
+        if (
+          !notificationMessages.has(notificationKey(label)) &&
+          !actionLabel.test(label.trim())
+        )
+          continue;
+      } else {
+        if (!isInterface(element)) continue;
+        // Native hints must be complete action labels, not names or arbitrary prose.
+        // Accessible names may also contain action counts, e.g. "9 reposts. Repost".
+        if (
+          !actionLabel.test(label.trim()) &&
+          !(
+            attribute === "aria-label" &&
+            /^(?:[\d.,]+\s+)?(?:reposting|reposted|reposts|repost|posting|posted|posts|post)\b/i.test(
+              label,
+            )
           )
         )
-      )
-        continue;
+          continue;
+      }
       const translated = translate(label);
       if (translated !== label) element.setAttribute(attribute, translated);
     }

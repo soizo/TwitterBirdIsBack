@@ -6,6 +6,7 @@
 
 - 界面控件和状态标签中的 `Post / Posted / Posts` → `Tweet / Tweeted / Tweets`，`Repost / Reposted / Reposts` → `Retweet / Retweeted / Retweets`，保留常见大小写形式，并处理动态加载和重绘。
 - 悬停提示（`HoverLabel`／`role="tooltip"`）、原生 `title` 和无障碍标签同步恢复操作用语，包括 `Undo repost`；任意提示正文不做逐词替换。
+- 英文系统通知（toast／alert）统一恢复已核对的 50 条官方文案：发送、转发、书签、置顶、回复、草稿／定时发布删除及失败提示等。包括 `Your post was sent.` → `Your tweet was sent.`、`reposting` → `retweeting`；支持初始、动态、拆分文本及提示属性。未知通知、用户姓名和正文不纳入新增通知规则。
 - 详情页及其子页面的主标题同样恢复 Tweet／Tweets／Retweets，支持单页导航和重绘；资料页标题不纳入替换，避免改写用户显示名。
 - 不做整页文字替换；跳过推文正文、已识别的用户名／用户资料区域和输入内容。未识别的界面区域可能仍显示新用语。
 - 侧栏与编辑框发帖按钮、Follow 按钮：背景 `#1DA1F2`，悬停 `#168BD2`。文字和图标在浅色、深色模式下统一使用白色；不依赖网站或系统主题。

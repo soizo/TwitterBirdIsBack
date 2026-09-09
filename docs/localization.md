@@ -43,6 +43,25 @@ The current bundle establishes current X wording, not historical Twitter wording
 
 Logged-out requests currently use a different `x-web` application; its bundles should not be assumed to describe the authenticated interface. Only public asset URLs and bounded language/message data belong in research artifacts, never account state or credentials.
 
+## English system notifications
+
+The notification allowlist in `extension/classic-ui.js` contains 50 complete static messages checked against the current official English resource:
+<https://abs.twimg.com/responsive-web/client-web/i18n/en.331b03849c5aabc8a.js>
+
+Representative identifiers:
+
+| Identifiers | Message family |
+| --- | --- |
+| `h4dd544e`, `eae9e604`, `gcdf3fd6`, `c7999d10` | Single/multiple posts sent, including edit-window notices |
+| `f5d17674`, `h32b1ac4`, `d8e56f40` | Repost success and retry/limit errors |
+| `c0554ca0`, `g922bf14` | Send failure and edit restrictions |
+| `cce3f116`, `b593b396`, `b2542f56`, `i14d7a46` | Bookmark changes and retry errors |
+| `d04f95c0`, `a2dd7414`, `a50c911e` | Pin/unpin/highlight notices |
+| `ie4538b4`, `ad135a24`, `ee369efc`, `c3e7f572` | Pin/unpin replies and failures |
+| `cca7fa72`, `d15af6da`, `a1e1b748`, `dbd8a566`, `c82be5a8`, `b38b254a`, `he2e3cc4` | Unsent/draft/scheduled deletion results |
+
+New notification coverage is limited to `[data-testid="toast"]` and `[role="alert"]`. Complete-message matching avoids rewriting interpolated usernames in unknown alerts. Matching tolerates case, whitespace, apostrophe style, and a terminal punctuation mark without changing those in the displayed text. User-content exclusions still apply. This is coverage of the checked messages, not a guarantee about future or arbitrary notifications. Tests use local DOM fixtures; no posts were published to exercise the confirmation.
+
 ## Historical English terminology evidence
 
 Fetched directly from the official CDN, as text only:
