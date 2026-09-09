@@ -33,7 +33,7 @@ with tempfile.TemporaryDirectory() as directory:
             assert all(name in names for name in manifest['icons'].values())
             if 'firefox' in archive.name:
                 gecko = manifest['browser_specific_settings']['gecko']
-                assert gecko['id'] == 'twitter-bird-is-back@extensions.local'
+                assert gecko['id'] == 'twitter-bird-is-back@soizo'
                 assert gecko['strict_min_version'] == '140.0'
                 assert manifest['browser_specific_settings']['gecko_android']['strict_min_version'] == '142.0'
                 assert gecko['data_collection_permissions'] == {'required': ['none']}

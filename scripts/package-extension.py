@@ -36,7 +36,7 @@ def main():
             package_manifest["browser_specific_settings"] = {
                 "gecko": {
                     # Keep this ID across upgrades; signing checks its uniqueness.
-                    "id": "twitter-bird-is-back@extensions.local",
+                    "id": "twitter-bird-is-back@soizo",
                     "strict_min_version": "140.0",
                     "data_collection_permissions": {"required": ["none"]},
                 },
