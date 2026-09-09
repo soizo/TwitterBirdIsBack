@@ -1,9 +1,10 @@
-:is(
-  [data-testid="SideNav_NewTweet_Button"],
-  [data-testid="tweetButtonInline"],
-  [data-testid="tweetButton"],
-  button[data-testid$="-follow"]
-) {
+html[data-twitter-bird-buttons="on"]
+  :is(
+    [data-testid="SideNav_NewTweet_Button"],
+    [data-testid="tweetButtonInline"],
+    [data-testid="tweetButton"],
+    button[data-testid$="-follow"]
+  ) {
   background-color: #1da1f2 !important;
   color: #ffffff !important;
 

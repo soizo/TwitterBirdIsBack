@@ -240,6 +240,7 @@ test("post and Follow buttons use classic blue with darker hover without changin
     `);
     await page.evaluate((scheme) => {
       document.documentElement.style.colorScheme = scheme;
+      document.documentElement.dataset.twitterBirdButtons = "on";
     }, theme);
     await page.addStyleTag({
       path: path.resolve(__dirname, "../extension/classic-ui.css"),

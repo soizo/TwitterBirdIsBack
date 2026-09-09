@@ -3,10 +3,15 @@
   "name": "Twitter Bird Is Back",
   "version": "0.1.0",
   "description": "Replace X brand logos with the blue bird on x.com.",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "Twitter Bird Is Back",
+    "default_popup": "popup.html"
+  },
   "content_scripts": [
     {
       "matches": ["https://x.com/*", "https://www.x.com/*"],
-      "js": ["locales.js", "content.js", "classic-ui.js", "title.js"],
+      "js": ["settings.js", "locales.js", "content.js", "classic-ui.js", "title.js"],
       "css": ["classic-ui.css"],
       "run_at": "document_start"
     }

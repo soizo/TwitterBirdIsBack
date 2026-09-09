@@ -1,4 +1,10 @@
-(() => {
+(async () => {
+  if (globalThis.TwitterBirdSettings) {
+    const settings = await globalThis.TwitterBirdSettings.load().catch(
+      () => null,
+    );
+    if (!settings?.enabled || !settings.title) return;
+  }
   // English title grammar only. Future locales need their own structural rules.
   const englishPageTitles = new Map([
     ["Post", "Tweet"],

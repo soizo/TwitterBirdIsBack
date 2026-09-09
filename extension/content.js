@@ -1,4 +1,13 @@
-(() => {
+(async () => {
+  const settings = globalThis.TwitterBirdSettings
+    ? await globalThis.TwitterBirdSettings.load().catch(() => null)
+    : { enabled: true, bird: true, buttons: true, translation: true };
+  document.documentElement.setAttribute(
+    "data-twitter-bird-buttons",
+    settings?.enabled && settings.buttons ? "on" : "off",
+  );
+  if (!settings?.enabled || (!settings.bird && !settings.translation)) return;
+
   const xLogo =
     "M21.742 21.75l-7.563-11.179 7.056-8.321h-2.456l-5.691 6.714-4.54-6.714H2.359l7.29 10.776L2.25 21.75h2.456l6.035-7.118 4.818 7.118h6.191-.008zM7.739 3.818L18.81 20.182h-2.447L5.29 3.818h2.447z";
   const bird =
@@ -26,7 +35,7 @@
   )}`;
 
   function isTranslationButton(element) {
-    if (!element?.matches("button")) return false;
+    if (!settings.translation || !element?.matches("button")) return false;
     const label = element.getAttribute("aria-label");
     return (
       globalThis.TwitterBirdLocales?.isTranslationLabel(label) ??
@@ -45,7 +54,7 @@
     const icons = root.matches('link[rel~="icon" i]')
       ? [root]
       : root.querySelectorAll('link[rel~="icon" i]');
-    for (const icon of icons) {
+    for (const icon of settings.bird ? icons : []) {
       if (icon.type !== "image/svg+xml") icon.type = "image/svg+xml";
       if (icon.getAttribute("sizes") !== "any")
         icon.setAttribute("sizes", "any");
@@ -57,7 +66,7 @@
       : root.querySelectorAll("svg path");
     // ponytail: exact current X logo only; add observed variants when X changes its artwork.
     for (const path of paths) {
-      if (path.getAttribute("d") === xLogo) {
+      if (settings.bird && path.getAttribute("d") === xLogo) {
         path.setAttribute("d", bird);
         path.style.fill = "#1d9bf0";
       }

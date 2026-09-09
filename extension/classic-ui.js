@@ -1,4 +1,10 @@
-(() => {
+(async () => {
+  if (globalThis.TwitterBirdSettings) {
+    const settings = await globalThis.TwitterBirdSettings.load().catch(
+      () => null,
+    );
+    if (!settings?.enabled || !settings.terms) return;
+  }
   const terms = {
     post: "tweet",
     posted: "tweeted",

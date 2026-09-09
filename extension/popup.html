@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Twitter Bird Is Back</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="settings.js" defer></script>
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <header>
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28"><path fill="#1DA1F2" d="M23.643 4.937a9.65 9.65 0 0 1-2.825.775 4.958 4.958 0 0 0 2.163-2.723 9.99 9.99 0 0 1-3.127 1.195 4.916 4.916 0 0 0-8.384 4.482A13.944 13.944 0 0 1 1.64 3.162a4.916 4.916 0 0 0 1.523 6.558 4.903 4.903 0 0 1-2.229-.616v.061a4.917 4.917 0 0 0 3.946 4.818 4.935 4.935 0 0 1-2.224.084 4.923 4.923 0 0 0 4.6 3.419A9.869 9.869 0 0 1 0 19.523a13.94 13.94 0 0 0 7.548 2.212c9.057 0 14.01-7.503 14.01-14.01 0-.213-.005-.425-.014-.636a10.012 10.012 0 0 0 2.46-2.548l-.047-.02z"/></svg>
+    <h1>Twitter Bird Is Back</h1>
+  </header>
+  <main>
+    <form>
+      <label class="option master" for="enabled"><input id="enabled" name="enabled" type="checkbox" disabled><span data-copy="enabled">Enable modifications</span></label>
+      <fieldset>
+        <legend data-copy="legend">Modifications</legend>
+        <label class="option" for="bird"><input id="bird" name="bird" type="checkbox" disabled><span data-copy="bird">Blue bird &amp; site icon</span></label>
+        <label class="option" for="terms"><input id="terms" name="terms" type="checkbox" disabled><span data-copy="terms">Classic wording</span></label>
+        <label class="option" for="buttons"><input id="buttons" name="buttons" type="checkbox" disabled><span data-copy="buttons">Classic blue buttons</span></label>
+        <label class="option" for="translation"><input id="translation" name="translation" type="checkbox" disabled><span data-copy="translation">Translation globe</span></label>
+        <label class="option" for="title"><input id="title" name="title" type="checkbox" disabled><span data-copy="title">Tab titles</span></label>
+      </fieldset>
+    </form>
+    <p class="scope" data-copy="scope">Wording and titles: English only for now.</p>
+  </main>
+  <footer>
+    <p role="status" aria-atomic="true" data-state="loading">Loading settings…</p>
+    <p data-copy="hint">Applies to all X tabs after you refresh them.</p>
+  </footer>
+</body>
+</html>

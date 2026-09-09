@@ -1,0 +1,116 @@
+:root {
+  color-scheme: light;
+  --paper: #fff;
+  --ink: #000;
+  --accent: #1da1f2;
+  background: var(--paper);
+  color: var(--ink);
+  font:
+    14px / 1.5 Arial,
+    "Microsoft YaHei",
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  /* Firefox measures popup content before sizing its viewport; avoid vw here. */
+  width: 320px;
+  margin: 0;
+  padding: 24px;
+  font: inherit;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+header svg {
+  flex: none;
+  fill: var(--accent);
+}
+header path {
+  fill: inherit;
+}
+h1 {
+  margin: 0;
+  font:
+    bold 20px / 1.2 Georgia,
+    "Times New Roman",
+    serif;
+}
+form {
+  margin: 0;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  cursor: pointer;
+}
+.master {
+  font-weight: bold;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ink);
+}
+fieldset {
+  margin: 16px 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+input {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--ink);
+  cursor: inherit;
+}
+input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+.option:has(input:disabled) {
+  opacity: 0.5;
+  cursor: default;
+}
+.option:hover:has(input:enabled) span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.scope {
+  font-size: 12px;
+  margin: 12px 0 20px;
+}
+footer {
+  border-top: 1px solid var(--ink);
+  padding-top: 16px;
+  font-size: 12px;
+}
+footer p {
+  margin: 0;
+}
+[role="status"] {
+  min-height: 1.5em;
+  margin-bottom: 4px;
+}
+[data-state="error"] {
+  font-weight: bold;
+}
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
