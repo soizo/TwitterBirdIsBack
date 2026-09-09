@@ -76,6 +76,17 @@ node scripts/build-icons.cjs
 - **Firefox**：打开 `about:debugging#/runtime/this-firefox`，点击「临时载入附加组件」，选择 `dist/manifest.json`。临时加载在浏览器重启后失效。
 - **每次构建后**：在对应扩展管理页点击扩展的「重新加载」，再刷新 x.com。不是自动热更新。
 
+## 长期安装与发布包
+
+运行 `npm run package`，更新固定安装目录 `dist/` 并在 `releases/` 生成两个以当前 manifest 版本命名的 ZIP，以及 `SHA256SUMS`。ZIP 根目录就是 `manifest.json`；只包含扩展运行文件，没有源码仓库、测试、研究缓存或原始展示素材。打包使用 Python 3 标准库。
+
+- **Chrome / Chromium**：继续加载当前项目的 `dist/`，不要移动该目录。重启浏览器仍保留安装；升级时重新构建并在扩展管理页点击重新加载。Chrome ZIP 用于备份或分发，不能把它当作已签名安装器直接安装。其他电脑可解压到自己的长期固定目录，再加载已解压扩展。
+- **Firefox 桌面版 140+**：`*-firefox-unsigned.zip` 是待签名提交包，不能在正式版 Firefox 中永久安装。登录 [Mozilla 开发者中心](https://addons.mozilla.org/developers/)，选择自行分发／不公开列出的扩展，提交该 ZIP，下载 Mozilla 签名后的 `.xpi`，再通过附加组件管理页「从文件安装附加组件」。上传、签名和公开发布均不会由本地打包自动执行。
+- Android 最低版本声明为 142，以满足数据声明字段的兼容性要求；这不代表已完成 Android 实机测试。
+- Firefox 包包含固定 ID `twitter-bird-is-back@extensions.local`，升级时保留它并递增版本号；首次签名时由 Mozilla 检查 ID 是否可用。没有配置自动更新服务器，后续自行安装新的签名版本。
+- Firefox 包声明不收集数据：扩展仅在本地处理页面，设置只保存在 `storage.local`，不向外发送用户数据。该声明不代表 Twitter 网站本身不联网。
+- 升级前保留旧版 ZIP 和校验文件；正式签名后的 `.xpi` 也应另行保存。不要删除现有扩展后重装来升级，以免丢失设置。
+
 ## 当前范围
 
 - 浏览器回归测试：初始和动态插入的品牌 SVG、启动屏、favicon 图片解码及防改回、用语替换与用户内容保护、按钮明暗主题／悬停／禁用态。
