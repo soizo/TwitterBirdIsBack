@@ -35,10 +35,14 @@ async function install(t, locale = "en-US") {
   const popupURL = `chrome-extension://${id}/${manifest.action.default_popup}`;
   await popup.goto(popupURL);
   await popup.locator("input[name=enabled]:enabled").waitFor();
-  assert.equal(await popup.locator('header img').evaluate(async image => {
-    await image.decode();
-    return image.naturalWidth;
-  }), 128, 'the provided extension logo must load in the actual popup');
+  assert.equal(
+    await popup.locator("header img").evaluate(async (image) => {
+      await image.decode();
+      return image.naturalWidth;
+    }),
+    128,
+    "the provided extension logo must load in the actual popup",
+  );
   return { context, popup, popupURL };
 }
 
@@ -70,29 +74,60 @@ async function toggle(popup, name, checked) {
   );
 }
 
-test("popup supports the selected X languages and falls back without inventing locales", {timeout:90000}, async t => {
+test("popup supports the selected X languages and falls back without inventing locales", {
+  timeout: 90000,
+}, async (t) => {
   for (const [browserLanguage, language, enabled] of [
-    ['ja-JP', 'ja', '変更を有効にする'],
-    ['en-US', 'en', 'Enable modifications'],
-    ['en-GB', 'en-GB', 'Enable modifications'],
-    ['zh-CN', 'zh-CN', '启用修改'],
-    ['zh-TW', 'zh-TW', '啟用修改'],
-    ['zh-HK', 'zh-TW', '啟用修改'],
-    ['ko-KR', 'ko', '변경 사항 적용'],
-    ['es-MX', 'es', 'Activar cambios'],
-    ['ru-RU', 'ru', 'Включить изменения'],
-    ['uk-UA', 'uk', 'Увімкнути зміни'],
-    ['fr-FR', 'en', 'Enable modifications'],
+    ["ja-JP", "ja", "変更を有効にする"],
+    ["en-US", "en", "Enable modifications"],
+    ["en-GB", "en-GB", "Enable modifications"],
+    ["zh-CN", "zh-CN", "启用修改"],
+    ["zh-TW", "zh-TW", "啟用修改"],
+    ["zh-HK", "zh-TW", "啟用修改"],
+    ["ko-KR", "ko", "변경 사항 적용"],
+    ["es-MX", "es", "Activar cambios"],
+    ["ru-RU", "ru", "Включить изменения"],
+    ["uk-UA", "uk", "Увімкнути зміни"],
+    ["fr-FR", "en", "Enable modifications"],
   ]) {
-    const {context, popup} = await install(t, browserLanguage);
-    assert.equal(await popup.locator('html').getAttribute('lang'), language, browserLanguage);
-    assert.equal(await popup.locator('[data-copy=enabled]').textContent(), enabled);
-    assert.equal(await popup.locator('[role=status]').getAttribute('data-state'), 'ready');
-    assert.equal(await popup.evaluate(() => [...document.querySelectorAll('[data-copy]')].every(e => e.textContent.trim() && e.textContent !== 'undefined')), true);
-    assert.equal(await popup.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${language}: horizontal overflow`);
-    assert.ok(await popup.locator('body').evaluate(e => e.scrollHeight) <= 600, `${language}: popup must fit the native height limit`);
-    await toggle(popup, 'hideGrok', true);
-    assert.equal(await popup.locator('[role=status]').getAttribute('data-state'), 'saved');
+    const { context, popup } = await install(t, browserLanguage);
+    assert.equal(
+      await popup.locator("html").getAttribute("lang"),
+      language,
+      browserLanguage,
+    );
+    assert.equal(
+      await popup.locator("[data-copy=enabled]").textContent(),
+      enabled,
+    );
+    assert.equal(
+      await popup.locator("[role=status]").getAttribute("data-state"),
+      "ready",
+    );
+    assert.equal(
+      await popup.evaluate(() =>
+        [...document.querySelectorAll("[data-copy]")].every(
+          (e) => e.textContent.trim() && e.textContent !== "undefined",
+        ),
+      ),
+      true,
+    );
+    assert.equal(
+      await popup.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+      `${language}: horizontal overflow`,
+    );
+    assert.ok(
+      (await popup.locator("body").evaluate((e) => e.scrollHeight)) <= 600,
+      `${language}: popup must fit the native height limit`,
+    );
+    await toggle(popup, "hideGrok", true);
+    assert.equal(
+      await popup.locator("[role=status]").getAttribute("data-state"),
+      "saved",
+    );
     await context.close();
   }
 });

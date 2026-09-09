@@ -1,9 +1,15 @@
 (async () => {
     const messages = globalThis.TwitterBirdPopupMessages;
-    const resolved = globalThis.TwitterBirdLocales.resolve(navigator.language)?.language;
-    const language = resolved === "en-GB" || Object.hasOwn(messages, resolved) ? resolved : "en";
+    const resolved = globalThis.TwitterBirdLocales.resolve(
+        navigator.language,
+    )?.language;
+    const language =
+        resolved === "en-GB" || Object.hasOwn(messages, resolved)
+            ? resolved
+            : "en";
     const copy = messages[language] ?? messages.en;
-    document.documentElement.lang = {zh: "zh-CN", "zh-Hant": "zh-TW"}[language] ?? language;
+    document.documentElement.lang =
+        { zh: "zh-CN", "zh-Hant": "zh-TW" }[language] ?? language;
     for (const element of document.querySelectorAll("[data-copy]")) {
         element.textContent = copy[element.dataset.copy];
     }

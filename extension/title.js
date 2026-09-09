@@ -20,16 +20,24 @@
     if (!title.endsWith(" / X")) return;
     const content = title.slice(0, -4);
     if (!data) return `${content} / Twitter`; // Preserve generic branding, not guessed translations.
-    let restored = Object.hasOwn(data.headings, content) ? data.headings[content] : content;
+    let restored = Object.hasOwn(data.headings, content)
+      ? data.headings[content]
+      : content;
     const [prefix, remainder] = data.title[0].split("{name}");
     const [between, suffix] = remainder.split("{text}");
     const parts = content.split(between);
-    if (parts.length === 2 && parts[0].startsWith(prefix) && parts[1].endsWith(suffix)) {
+    if (
+      parts.length === 2 &&
+      parts[0].startsWith(prefix) &&
+      parts[1].endsWith(suffix)
+    ) {
       const name = parts[0].slice(prefix.length);
       const text = suffix ? parts[1].slice(0, -suffix.length) : parts[1];
       if (name) {
         // A callback avoids interpreting $&, $1 or placeholder-like text in names/posts.
-        restored = data.title[1].replace(/\{(name|text)\}/g, (_, field) => field === "name" ? name : text);
+        restored = data.title[1].replace(/\{(name|text)\}/g, (_, field) =>
+          field === "name" ? name : text,
+        );
       }
     }
     return `${restored} / ${data.brand}`;
@@ -46,7 +54,8 @@
     if (!["en", "en-GB"].includes(language)) {
       const data = globalThis.TwitterBirdClassicLocales?.[language];
       const localized = localizedTitle(title, data);
-      if (localized !== undefined && unread + localized !== original) document.title = unread + localized;
+      if (localized !== undefined && unread + localized !== original)
+        document.title = unread + localized;
       return;
     }
     let restored;

@@ -169,7 +169,8 @@
 
   globalThis.TwitterBirdLocales = {
     resolve,
-    currentLanguage: () => resolve(globalThis.document?.documentElement?.lang || "en")?.language,
+    currentLanguage: () =>
+      resolve(globalThis.document?.documentElement?.lang || "en")?.language,
     isTranslationLabel: (label) => translationLabels.has(label),
     isGrokLabel: (label) => grokButtonLabels.has(label?.trim()),
   };

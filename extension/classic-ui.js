@@ -133,9 +133,10 @@
 
   const localeCache = new Map();
   const normalized = (text) => text.trim().replace(/\s+/g, " ");
-  const language = () => globalThis.TwitterBirdLocales
-    ? globalThis.TwitterBirdLocales.currentLanguage()
-    : document.documentElement.lang || "en";
+  const language = () =>
+    globalThis.TwitterBirdLocales
+      ? globalThis.TwitterBirdLocales.currentLanguage()
+      : document.documentElement.lang || "en";
   const english = () => ["en", "en-GB"].includes(language());
 
   function localeRules() {
@@ -144,13 +145,30 @@
     if (!source) return null;
     if (!localeCache.has(code)) {
       const rules = {};
-      for (const kind of ["actions", "headings", "labels", "notices", "composer"]) {
-        rules[kind] = new Map(Object.entries(source[kind]).map(([from, to]) => [normalized(from), to]));
+      for (const kind of [
+        "actions",
+        "headings",
+        "labels",
+        "notices",
+        "composer",
+      ]) {
+        rules[kind] = new Map(
+          Object.entries(source[kind]).map(([from, to]) => [
+            normalized(from),
+            to,
+          ]),
+        );
       }
       const escape = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       rules.counts = source.counts.map(([from, to]) => {
         const [prefix, suffix] = from.split("{count}");
-        return [new RegExp(`^${escape(prefix)}([\\p{Nd}][\\p{Nd}.,\\u00a0\\u202f ]*)${escape(suffix)}$`, "u"), to];
+        return [
+          new RegExp(
+            `^${escape(prefix)}([\\p{Nd}][\\p{Nd}.,\\u00a0\\u202f ]*)${escape(suffix)}$`,
+            "u",
+          ),
+          to,
+        ];
       });
       localeCache.set(code, rules);
     }
@@ -160,13 +178,21 @@
   function localScope(element) {
     if (!element || element.closest(protectedContent)) return null;
     const notice = element.closest(notificationSelector);
-    if (notice) return {root: notice, kind: "notices"};
-    const control = element.closest(`${controls}, [data-testid="HoverLabel"], [role="tooltip"]`);
-    if (control) return {root: control, kind: control.matches('[role="tab"]') ? "headings" : "actions"};
+    if (notice) return { root: notice, kind: "notices" };
+    const control = element.closest(
+      `${controls}, [data-testid="HoverLabel"], [role="tooltip"]`,
+    );
+    if (control)
+      return {
+        root: control,
+        kind: control.matches('[role="tab"]') ? "headings" : "actions",
+      };
     if (!/\/status\/\d+(?:\/|$)/.test(location.pathname)) return null;
     const selector = '[data-testid="primaryColumn"] h2[role="heading"]';
     const heading = element.closest(selector);
-    return heading && heading === document.querySelector(selector) ? {root: heading, kind: "headings"} : null;
+    return heading && heading === document.querySelector(selector)
+      ? { root: heading, kind: "headings" }
+      : null;
   }
 
   function localText(text, rules, kind) {
@@ -177,7 +203,10 @@
       if (replacement === undefined) {
         for (const [pattern, target] of rules.counts) {
           const match = value.match(pattern);
-          if (match) { replacement = target.replace("{count}", () => match[1]); break; }
+          if (match) {
+            replacement = target.replace("{count}", () => match[1]);
+            break;
+          }
         }
       }
     }
@@ -185,29 +214,50 @@
   }
 
   function textNodes(element, notice) {
-    const excluded = `${protectedContent}, svg${notice ? ', a, button, [role="button"]' : ''}`;
+    const excluded = `${protectedContent}, svg${notice ? ', a, button, [role="button"]' : ""}`;
     const nodes = [];
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) {
-      if (!walker.currentNode.parentElement.closest(excluded)) nodes.push(walker.currentNode);
+      if (!walker.currentNode.parentElement.closest(excluded))
+        nodes.push(walker.currentNode);
     }
     return nodes;
   }
 
   function replaceNodeText(nodes, replacement) {
-    const original = nodes.map(node => node.data).join("");
+    const original = nodes.map((node) => node.data).join("");
     if (replacement === original) return;
-    let start = 0, end = original.length, targetEnd = replacement.length;
-    while (start < end && start < targetEnd && original[start] === replacement[start]) start++;
-    while (end > start && targetEnd > start && original[end - 1] === replacement[targetEnd - 1]) {end--; targetEnd--;}
+    let start = 0,
+      end = original.length,
+      targetEnd = replacement.length;
+    while (
+      start < end &&
+      start < targetEnd &&
+      original[start] === replacement[start]
+    )
+      start++;
+    while (
+      end > start &&
+      targetEnd > start &&
+      original[end - 1] === replacement[targetEnd - 1]
+    ) {
+      end--;
+      targetEnd--;
+    }
     // Edit only text data in the changed range. Keep SVGs, links, spans and listeners.
     const inserted = replacement.slice(start, targetEnd);
-    let offset = 0, written = false;
+    let offset = 0,
+      written = false;
     for (const node of nodes) {
       const value = node.data;
-      const from = Math.max(0, start - offset), to = Math.min(value.length, end - offset);
-      if (from < to || (start === end && from === to && from <= value.length && to >= 0)) {
-        node.data = value.slice(0, from) + (written ? "" : inserted) + value.slice(to);
+      const from = Math.max(0, start - offset),
+        to = Math.min(value.length, end - offset);
+      if (
+        from < to ||
+        (start === end && from === to && from <= value.length && to >= 0)
+      ) {
+        node.data =
+          value.slice(0, from) + (written ? "" : inserted) + value.slice(to);
         written = true;
       }
       offset += value.length;
@@ -221,46 +271,80 @@
     // Toasts may contain a separate message wrapper and an unchanged View link.
     if (scope.kind === "notices") {
       const inner = [];
-      for (let part = element; part && part !== scope.root; part = part.parentElement) inner.push(part);
+      for (
+        let part = element;
+        part && part !== scope.root;
+        part = part.parentElement
+      )
+        inner.push(part);
       candidates.push(...inner.reverse());
     }
     for (const candidate of candidates) {
       const nodes = textNodes(candidate, scope.kind === "notices");
-      const value = nodes.map(node => node.data).join("");
+      const value = nodes.map((node) => node.data).join("");
       const next = localText(value, rules, scope.kind);
-      if (next !== value) { replaceNodeText(nodes, next); return; }
+      if (next !== value) {
+        replaceNodeText(nodes, next);
+        return;
+      }
     }
   }
 
   // Complete interface phrases only; never replace arbitrary occurrences of the brand.
-  const brandHints = new Map([
-    "Sourced from across X", "New to X?", "Welcome to X!", "Log in to X",
-    "Sign up for X", "Log out of X?", "Continue to X", "Your X data",
-    "Your X activity", "Off-X activity", "X Rules", "Check what’s trending on X.",
-  ].map(text => [text, text.replace(/\bX\b/g, "Twitter")]));
+  const brandHints = new Map(
+    [
+      "Sourced from across X",
+      "New to X?",
+      "Welcome to X!",
+      "Log in to X",
+      "Sign up for X",
+      "Log out of X?",
+      "Continue to X",
+      "Your X data",
+      "Your X activity",
+      "Off-X activity",
+      "X Rules",
+      "Check what’s trending on X.",
+    ].map((text) => [text, text.replace(/\bX\b/g, "Twitter")]),
+  );
 
   function restoreBrandHint(element) {
-    if (!english() || element.closest(`${protectedContent}, article, ${notificationSelector}`) ||
-        !element.closest('main, [role="main"], aside, nav, [data-testid="sidebarColumn"]')) return;
+    if (
+      !english() ||
+      element.closest(
+        `${protectedContent}, article, ${notificationSelector}`,
+      ) ||
+      !element.closest(
+        'main, [role="main"], aside, nav, [data-testid="sidebarColumn"]',
+      )
+    )
+      return;
     const original = element.textContent;
     const replacement = brandHints.get(normalized(original));
     if (replacement && !element.querySelector(protectedContent)) {
-      replaceNodeText(textNodes(element, false), original.replace(original.trim(), replacement));
+      replaceNodeText(
+        textNodes(element, false),
+        original.replace(original.trim(), replacement),
+      );
     }
   }
 
   function composerText(value) {
     // Official historical reply prompt: ad993b0e (see localization evidence).
     const replacement = english()
-      ? (normalized(value) === "Post your reply" ? "Tweet your reply!" : undefined)
+      ? normalized(value) === "Post your reply"
+        ? "Tweet your reply!"
+        : undefined
       : localeRules()?.composer.get(normalized(value));
     return replacement ? value.replace(value.trim(), () => replacement) : value;
   }
 
   function restoreText(node) {
     restoreBrandHint(node.parentElement);
-    if (node.parentElement.closest('.public-DraftEditorPlaceholder-inner') &&
-        !node.parentElement.closest(protectedContent)) {
+    if (
+      node.parentElement.closest(".public-DraftEditorPlaceholder-inner") &&
+      !node.parentElement.closest(protectedContent)
+    ) {
       const next = composerText(node.data);
       if (next !== node.data) node.data = next;
       return;
@@ -276,9 +360,15 @@
   }
 
   function restoreLabel(element) {
-    if (element.matches('[data-testid^="tweetTextarea_"]') &&
-        !element.parentElement?.closest(protectedContent)) {
-      for (const attribute of ['placeholder', 'data-placeholder', 'aria-label']) {
+    if (
+      element.matches('[data-testid^="tweetTextarea_"]') &&
+      !element.parentElement?.closest(protectedContent)
+    ) {
+      for (const attribute of [
+        "placeholder",
+        "data-placeholder",
+        "aria-label",
+      ]) {
         const value = element.getAttribute(attribute);
         if (value) {
           const next = composerText(value);
@@ -287,7 +377,8 @@
       }
     }
     if (!english()) {
-      const rules = localeRules(), scope = localScope(element);
+      const rules = localeRules(),
+        scope = localScope(element);
       if (!rules || !scope) return;
       for (const attribute of ["aria-label", "title"]) {
         const value = element.getAttribute(attribute);
@@ -339,7 +430,9 @@
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     while (walker.nextNode()) restoreText(walker.currentNode);
     if (root.nodeType === Node.ELEMENT_NODE) restoreLabel(root);
-    for (const element of root.querySelectorAll("[aria-label], [title], [placeholder], [data-placeholder]"))
+    for (const element of root.querySelectorAll(
+      "[aria-label], [title], [placeholder], [data-placeholder]",
+    ))
       restoreLabel(element);
   }
 
@@ -358,6 +451,12 @@
     subtree: true,
     characterData: true,
     attributes: true,
-    attributeFilter: ["aria-label", "title", "placeholder", "data-placeholder", "lang"],
+    attributeFilter: [
+      "aria-label",
+      "title",
+      "placeholder",
+      "data-placeholder",
+      "lang",
+    ],
   });
 })();
