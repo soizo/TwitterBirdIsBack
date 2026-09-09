@@ -35,6 +35,10 @@ async function install(t, locale = "en-US") {
   const popupURL = `chrome-extension://${id}/${manifest.action.default_popup}`;
   await popup.goto(popupURL);
   await popup.locator("input[name=enabled]:enabled").waitFor();
+  assert.equal(await popup.locator('header img').evaluate(async image => {
+    await image.decode();
+    return image.naturalWidth;
+  }), 128, 'the provided extension logo must load in the actual popup');
   return { context, popup, popupURL };
 }
 

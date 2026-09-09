@@ -1,0 +1,50 @@
+[
+  {
+    "language": "en", "post": ["Post", "Tweet"], "heading": ["Post", "Tweet"],
+    "undo": ["Undo repost", "Undo retweet"], "notice": ["Your post was sent.", "Your tweet was sent."],
+    "count": ["23 reposts. Reposted", "23 retweets. Retweeted"],
+    "title": ["Alice on X: \"Post X\" / X", "Alice on Twitter: \"Post X\" / Twitter"]
+  },
+  {
+    "language": "en-GB", "post": ["Post", "Tweet"], "heading": ["Post", "Tweet"],
+    "undo": ["Undo repost", "Undo retweet"], "notice": ["Your post was sent.", "Your tweet was sent."],
+    "count": ["23 reposts. Reposted", "23 retweets. Retweeted"],
+    "title": ["Alice on X: \"Post X\" / X", "Alice on Twitter: \"Post X\" / Twitter"]
+  },
+  {
+    "language": "zh-TW", "post": ["貼文", "推文"], "heading": ["貼文", "推文"],
+    "undo": ["取消轉發", "取消轉推"], "notice": ["你的貼文已發送。", "你的推文已發送。"],
+    "count": ["23 次轉發。已轉發", "23 則轉推。已轉推"],
+    "title": ["X 上的 $& {text}：「Post X」 / X", "Twitter 上的 $& {text}：\"Post X\" / Twitter"]
+  },
+  {
+    "language": "ja", "post": ["ポスト", "ツイートする"], "heading": ["ポスト", "ツイート"],
+    "undo": ["ポストを取り消す", "リツイートを取り消す"], "notice": ["ポストを送信しました。", "ツイートを送信しました。"],
+    "count": ["23 件のリポスト件。リポストしました", "23 件のリツイート。リツイートしました"],
+    "title": ["XユーザーのAliceさん: 「Post X」 / X", "AliceさんはTwitterを使っています: 「Post X」 / Twitter"]
+  },
+  {
+    "language": "ko", "post": ["게시", "트윗"], "heading": ["게시물", "트윗"],
+    "undo": ["재게시 취소", "리트윗 취소"], "notice": ["게시물을 전송했습니다.", "트윗을 보냈습니다."],
+    "count": ["23 재게시. 재게시함", "23 리트윗. 리트윗함"],
+    "title": ["X에서 Alice 님 : \"Post X\" / X", "Alice 님의 트위터: \"Post X\" / 트위터"]
+  },
+  {
+    "language": "es", "post": ["Post", "Twittear"], "heading": ["Post", "Tweet"],
+    "undo": ["Deshacer repost", "Deshacer Retweet"], "notice": ["Tu post se envió.", "Tu Tweet se envió."],
+    "count": ["23 reposts. Reposteado", "23 Retweets. Retwitteado"],
+    "title": ["Alice en X: \"Post X\" / X", "Alice en Twitter: \"Post X\" / Twitter"]
+  },
+  {
+    "language": "ru", "post": ["Опубликовать пост", "Твитнуть"], "heading": ["Пост", "Твит"],
+    "undo": ["Отменить репост", "Отменить ретвит"], "notice": ["Пост отправлен.", "Твит отправлен."],
+    "count": ["23 репоста. Сделан репост", "23 ретвита. Ретвитнуто"],
+    "title": ["Alice в X: «Post X» / X", "Alice в Твиттере: «Post X» / Твиттер"]
+  },
+  {
+    "language": "uk", "post": ["Опублікувати пост", "Твіт"], "heading": ["Пост", "Твіт"],
+    "undo": ["Скасувати репост", "Скасувати ретвіт"], "notice": ["Пост надіслано.", "Ваш твіт надіслано."],
+    "count": ["23 репости. Зроблено репост", "23 ретвіти. Ретвітнуто"],
+    "title": ["Alice в X: «Post X» / X", "Alice у Твіттері: «Post X» / Твіттер"]
+  }
+]

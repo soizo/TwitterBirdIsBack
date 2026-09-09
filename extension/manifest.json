@@ -2,16 +2,18 @@
   "manifest_version": 3,
   "name": "Twitter Bird Is Back",
   "version": "0.1.0",
-  "description": "Replace X brand logos with the blue bird on x.com.",
+  "description": "Restore the blue bird and classic Twitter interface.",
+  "icons": {"16": "icons/icon-16.png", "32": "icons/icon-32.png", "48": "icons/icon-48.png", "128": "icons/icon-128.png"},
   "permissions": ["storage"],
   "action": {
     "default_title": "Twitter Bird Is Back",
+    "default_icon": {"16": "icons/icon-16.png", "32": "icons/icon-32.png", "48": "icons/icon-48.png", "128": "icons/icon-128.png"},
     "default_popup": "popup.html"
   },
   "content_scripts": [
     {
       "matches": ["https://x.com/*", "https://www.x.com/*"],
-      "js": ["settings.js", "locales.js", "content.js", "classic-ui.js", "title.js"],
+      "js": ["settings.js", "locales.js", "content.js", "classic-locales.js", "classic-ui.js", "title.js"],
       "css": ["classic-ui.css"],
       "run_at": "document_start"
     }

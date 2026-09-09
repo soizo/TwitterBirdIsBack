@@ -27,12 +27,8 @@ header {
   gap: 12px;
   margin-bottom: 24px;
 }
-header svg {
+header img {
   flex: none;
-  fill: var(--accent);
-}
-header path {
-  fill: inherit;
 }
 h1 {
   margin: 0;
