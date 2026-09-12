@@ -18,14 +18,14 @@ body {
   /* Firefox measures popup content before sizing its viewport; avoid vw here. */
   width: 320px;
   margin: 0;
-  padding: 24px;
+  padding: 12px 24px;
   font: inherit;
 }
 header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 header img {
   flex: none;

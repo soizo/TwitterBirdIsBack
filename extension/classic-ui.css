@@ -13,6 +13,11 @@ html[data-twitter-bird-hide-grok="on"]
   display: none !important;
 }
 
+html[data-twitter-bird-hide-edit-image="on"]
+  a[href^="/i/grok-redirect?"][href*="%26action%3Dimg_edit"] {
+  display: none !important;
+}
+
 html[data-twitter-bird-buttons="on"]
   :is(
     [data-testid="SideNav_NewTweet_Button"],

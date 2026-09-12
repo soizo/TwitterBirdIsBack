@@ -8,6 +8,7 @@
     title: true,
     hideGrok: false,
     hideDrawers: false,
+    hideEditImage: false,
   };
   const api = globalThis.browser ?? globalThis.chrome;
   let snapshot;

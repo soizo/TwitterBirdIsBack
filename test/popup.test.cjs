@@ -8,6 +8,54 @@ const xLogo =
   "M21.742 21.75l-7.563-11.179 7.056-8.321h-2.456l-5.691 6.714-4.54-6.714H2.359l7.29 10.776L2.25 21.75h2.456l6.035-7.118 4.818 7.118h6.191-.008zM7.739 3.818L18.81 20.182h-2.447L5.29 3.818h2.447z";
 const features = ["bird", "terms", "buttons", "translation", "title"];
 
+test("Edit image toggle hides only matching links, including dynamic links", {
+  timeout: 30000,
+}, async (t) => {
+  const { context, popup } = await install(t);
+  assert.equal(
+    await popup.locator("input[name=hideEditImage]").isChecked(),
+    false,
+  );
+  const href =
+    "/i/grok-redirect?redirect_after_login=%2Fimagine%3Fparent_x_post_id%3D2098231879132660212%26media_url%3Dhttps%253A%252F%252Fpbs.twimg.com%252Fmedia%252FHR5qxDFbAAErtlS.jpg%26action%3Dimg_edit";
+  await context.route("https://x.com/**", (route) =>
+    route.fulfill({
+      contentType: "text/html",
+      body: `<a id="edit" href="${href}">Edit image</a><a id="other" href="${href.replace("img_edit", "view")}">View image</a><a id="grok" href="/i/grok">Grok</a>`,
+    }),
+  );
+  const page = await context.newPage();
+  await page.goto("https://x.com/home");
+  assert.equal(await page.locator("#edit").isVisible(), true);
+  await toggle(popup, "hideEditImage", true);
+  assert.equal(
+    await page.locator("#edit").isVisible(),
+    true,
+    "requires refresh",
+  );
+  await page.reload();
+  await page.locator("#edit").waitFor({ state: "hidden" });
+  assert.equal(await page.locator("#other").isVisible(), true);
+  assert.equal(await page.locator("#grok").isVisible(), true);
+  await page.evaluate((href) => {
+    const link = document.createElement("a");
+    link.id = "dynamic";
+    link.href = href;
+    link.textContent = "Edit image";
+    document.body.append(link);
+  }, href);
+  assert.equal(await page.locator("#dynamic").isVisible(), false);
+  await popup.reload();
+  await popup.locator("input[name=enabled]:enabled").waitFor();
+  assert.equal(
+    await popup.locator("input[name=hideEditImage]").isChecked(),
+    true,
+  );
+  await toggle(popup, "enabled", false);
+  await page.reload();
+  assert.equal(await page.locator("#edit").isVisible(), true);
+});
+
 async function install(t, locale = "en-US") {
   assert.ok(
     manifest.action?.default_popup,

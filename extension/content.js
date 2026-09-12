@@ -6,6 +6,7 @@
     ["buttons", "buttons"],
     ["hide-grok", "hideGrok"],
     ["hide-drawers", "hideDrawers"],
+    ["hide-edit-image", "hideEditImage"],
   ]) {
     document.documentElement.setAttribute(
       `data-twitter-bird-${attribute}`,
