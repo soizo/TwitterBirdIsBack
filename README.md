@@ -66,7 +66,7 @@ The two hiding options work independently. "Hide all recognized Grok entry point
 
 **Actual link** replaces `t.co` links with a complete HTTP(S) URL from the link's `title` or text, including dynamically loaded links. It preserves the displayed text and opening behavior. Incomplete or unsupported URLs are left unchanged; it does not fetch short links or guess missing parts. Destinations come from the page and are not independently verified. Direct links bypass the `t.co` redirect and any warnings it might show; turn this option off if you prefer the original links.
 
-The classic bird appears on Twitter pages. The laser-eye bird is limited to the browser toolbar, extension management page, and popup.
+The classic bird appears on Twitter pages, including the login/signup landing page. Its signup artwork scales down on narrow screens while preserving the site's light/dark theme and login controls. The tab-title setting also restores the fixed signup slogan's Twitter branding. The laser-eye bird is limited to the browser toolbar, extension management page, and popup.
 
 ## Language support
 
@@ -86,7 +86,7 @@ The extension does not perform page-wide text replacement. It skips post content
 
 - Changes to Twitter's interface may break some icon, terminology, or hiding rules.
 - The restored site icon does not retain Twitter's unread badge. Unread counts in tab titles remain intact.
-- SVGs redrawn by the site and brand icons with other shapes are not fully covered.
+- Unrecognized brand icon shapes are not covered. The recognized signup logo is restored after dynamic redraws.
 - Firefox compatibility and the appearance of the site icon in browser tabs still need manual verification. The declared minimum Android version is 142, but the extension has not been tested on an Android device.
 
 ## Development documentation

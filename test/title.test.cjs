@@ -10,6 +10,11 @@ test("English tab titles restore only structural branding and fixed UI terms", a
   t.after(() => browser.close());
   const cases = [
     ["(8) Home / X", "(8) Home / Twitter"],
+    ["X. It’s what’s happening / X", "Twitter. It’s what’s happening / Twitter"],
+    ["X. It’s what’s happening / Twitter", "Twitter. It’s what’s happening / Twitter"],
+    ["X. It's what's happening / X", "Twitter. It's what's happening / Twitter"],
+    ["(2) X. It’s what’s happening / X", "(2) Twitter. It’s what’s happening / Twitter"],
+    ["X. It’s what’s happening (@alice) / X", "X. It’s what’s happening (@alice) / Twitter"],
     ["(2) Post / X", "(2) Tweet / Twitter"],
     ["Posts / X", "Tweets / Twitter"],
     ["Reposts / X", "Retweets / Twitter"],

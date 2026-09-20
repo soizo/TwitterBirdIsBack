@@ -48,6 +48,11 @@
     const [, unread = "", title] = original.match(
       /^(\(\d+\+?\)\s+)?([\s\S]*)$/,
     );
+    // Match only the fixed signup slogan, including titles partly restored by older versions.
+    if (/^X\. It[’']s what[’']s happening \/ (?:X|Twitter)$/.test(title)) {
+      document.title = unread + title.replace(/^X\./, "Twitter.").replace(/ \/ X$/, " / Twitter");
+      return;
+    }
     const language = globalThis.TwitterBirdLocales
       ? globalThis.TwitterBirdLocales.currentLanguage()
       : document.documentElement?.lang || "en";

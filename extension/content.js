@@ -73,6 +73,38 @@
   const bird =
     "M23.643 4.937a9.65 9.65 0 0 1-2.825.775 4.958 4.958 0 0 0 2.163-2.723 9.99 9.99 0 0 1-3.127 1.195 4.916 4.916 0 0 0-8.384 4.482A13.944 13.944 0 0 1 1.64 3.162a4.916 4.916 0 0 0 1.523 6.558 4.903 4.903 0 0 1-2.229-.616v.061a4.917 4.917 0 0 0 3.946 4.818 4.935 4.935 0 0 1-2.224.084 4.923 4.923 0 0 0 4.6 3.419A9.869 9.869 0 0 1 0 19.523a13.94 13.94 0 0 0 7.548 2.212c9.057 0 14.01-7.503 14.01-14.01 0-.213-.005-.425-.014-.636a10.012 10.012 0 0 0 2.46-2.548l-.047-.02z";
 
+  // Shared by both signup layouts and both themes in the supplied page snapshots.
+  const signupX =
+    "M285.38 207.711L462.954 1.5H420.874L266.687 180.55L143.538 1.5H1.50003L187.726 272.256L1.50003 488.5H43.5818L206.408 299.417L336.462 488.5H478.5L285.37 207.711H285.38ZM227.743 274.641L208.875 247.68L58.7444 33.147H123.379L244.536 206.282L263.405 233.243L420.894 458.292H356.259L227.743 274.652V274.641Z";
+
+  function restoreSignupLogo(svg) {
+    if (!svg || svg.closest(userContent)) return;
+    if (!svg.hasAttribute("data-twitter-bird-signup-logo")) {
+      if (
+        svg.getAttribute("viewBox") !== "0 0 480 490" ||
+        ![...svg.querySelectorAll("path")].some((path) => path.getAttribute("d") === signupX)
+      ) return;
+      svg.setAttribute("data-twitter-bird-signup-logo", "");
+    }
+    // Replace the artwork as a unit: the old logo has multiple gradient/stroke layers.
+    if (
+      svg.children.length !== 1 ||
+      svg.firstElementChild.localName !== "path" ||
+      svg.firstElementChild.getAttribute("d") !== bird
+    ) {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", bird);
+      path.setAttribute("fill", "#1da1f2");
+      svg.replaceChildren(path);
+    }
+    if (svg.getAttribute("viewBox") !== "0 0 24 24") svg.setAttribute("viewBox", "0 0 24 24");
+    if (svg.getAttribute("aria-label") !== "Twitter") svg.setAttribute("aria-label", "Twitter");
+    if (svg.getAttribute("role") !== "img") svg.setAttribute("role", "img");
+    const container = svg.parentElement;
+    if (container?.tagName === "DIV" && container.childElementCount === 1)
+      container.setAttribute("data-twitter-bird-signup-logo-container", "");
+  }
+
   const GLOBE_PATH =
     "M18 0C8.059 0 0 8.059 0 18s8.059 18 18 18 18-8.059 18-18S27.941 0 18 0z" +
     "M2.05 19h3.983c.092 2.506.522 4.871 1.229 7H4.158c-1.207-2.083-1.95-4.459-2.108-7z" +
@@ -111,6 +143,11 @@
     }
     if (root.nodeType !== Node.ELEMENT_NODE) return;
     if (settings.hideGrok) markGrokEntries(root);
+    if (settings.bird) {
+      restoreSignupLogo(root.closest("svg"));
+      for (const svg of root.querySelectorAll('svg[viewBox="0 0 480 490"], svg[data-twitter-bird-signup-logo]'))
+        restoreSignupLogo(svg);
+    }
     if (
       isTranslationButton(root) &&
       root.previousElementSibling?.matches("svg")
@@ -158,12 +195,15 @@
         record.type === "attributes" &&
         (settings.hideGrok ||
           record.target.matches("link") ||
+          (settings.bird && record.target.closest("svg")) ||
           isTranslationButton(record.target))
       ) {
         replaceIcons(record.target);
       }
-      if (settings.hideGrok && record.type === "childList") {
-        markGrokEntry(record.target.closest(entryCandidates));
+      if (record.type === "childList") {
+        if (settings.hideGrok) markGrokEntry(record.target.closest(entryCandidates));
+        if (settings.bird && record.target.closest?.("svg[data-twitter-bird-signup-logo]"))
+          replaceIcons(record.target);
       }
       if (record.type === "characterData") replaceIcons(record.target);
       for (const node of record.addedNodes) replaceIcons(node);
@@ -183,6 +223,7 @@
       "data-testid",
       "contenteditable",
       "d",
+      "viewBox",
     ],
   });
 })();

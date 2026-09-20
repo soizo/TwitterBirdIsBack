@@ -1,3 +1,25 @@
+/* Signup artwork only; retain the site's form, theme and visibility breakpoints. */
+svg[data-twitter-bird-signup-logo] {
+  width: 100% !important;
+  max-width: 360px !important;
+  height: auto !important;
+  flex-shrink: 0;
+}
+[data-twitter-bird-signup-logo-container] {
+  justify-content: center !important;
+}
+@media (max-width: 850px) {
+  svg[data-twitter-bird-signup-logo] {
+    width: 80px !important;
+    max-width: 100% !important;
+  }
+  [data-twitter-bird-signup-logo-container] {
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    padding-block: 16px;
+  }
+}
+
 /* Native CSS also handles drawers inserted after the page has loaded. */
 html[data-twitter-bird-hide-drawers="on"]
 :is(
