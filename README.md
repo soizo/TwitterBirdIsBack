@@ -21,9 +21,9 @@ Bring back the familiar Twitter interface and optionally hide Grok entry points 
 
 ### Firefox
 
-Version 0.1.1 has been submitted to Mozilla Add-ons for public review. The product page is not accessible yet, so there is no store installation link at this time. Use the temporary installation method below while the review is pending.
+Install [Twitter Bird Is Back from Mozilla Add-ons](https://addons.mozilla.org/firefox/addon/twitter-bird-is-back/) to receive signed releases and automatic updates.
 
-Firefox 140 or later is required on desktop. The unsigned ZIP cannot be installed permanently in a standard Firefox release. Once the public release is available, Mozilla Add-ons will provide installation and updates.
+Firefox 140 or later is required on desktop. The unsigned ZIP cannot be installed permanently in a standard Firefox release; use the store version or the temporary installation method below.
 
 ### Chrome, Chromium, and temporary Firefox installation
 
