@@ -58,10 +58,13 @@ Changes are saved as soon as you select them. Existing pages need a manual refre
 | Restore classic blue buttons | On |
 | Restore the globe icon for translation | On |
 | Restore Twitter tab titles | On |
+| Actual link: replace short links with complete page-supplied URLs | On |
 | Hide all recognized Grok entry points | Off |
 | Hide the floating Grok and Chat panel | Off |
 
 The two hiding options work independently. "Hide all recognized Grok entry points" does not block network traffic or prevent direct access to Grok, and it leaves normal translation controls and user content intact. "Hide the floating Grok and Chat panel" does not hide the standard chat navigation item.
+
+**Actual link** replaces `t.co` links with a complete HTTP(S) URL from the link's `title` or text, including dynamically loaded links. It preserves the displayed text and opening behavior. Incomplete or unsupported URLs are left unchanged; it does not fetch short links or guess missing parts. Destinations come from the page and are not independently verified. Direct links bypass the `t.co` redirect and any warnings it might show; turn this option off if you prefer the original links.
 
 The classic bird appears on Twitter pages. The laser-eye bird is limited to the browser toolbar, extension management page, and popup.
 

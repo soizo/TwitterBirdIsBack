@@ -25,7 +25,7 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 header img {
   flex: none;
@@ -53,7 +53,7 @@ form {
   border-bottom: 1px solid var(--ink);
 }
 fieldset {
-  margin: 16px 0 0;
+  margin: 8px 0 0;
   padding: 0;
   border: 0;
   min-width: 0;
@@ -89,7 +89,7 @@ input:focus-visible {
 }
 .scope {
   font-size: 12px;
-  margin: 12px 0 20px;
+  margin: 12px 0 8px;
 }
 footer {
   border-top: 1px solid var(--ink);

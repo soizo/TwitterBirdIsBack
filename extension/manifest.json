@@ -13,7 +13,7 @@
   "content_scripts": [
     {
       "matches": ["https://x.com/*", "https://www.x.com/*"],
-      "js": ["settings.js", "locales.js", "content.js", "classic-locales.js", "classic-ui.js", "title.js"],
+      "js": ["settings.js", "locales.js", "content.js", "classic-locales.js", "classic-ui.js", "title.js", "actual-links.js"],
       "css": ["classic-ui.css"],
       "run_at": "document_start"
     }

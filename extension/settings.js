@@ -6,6 +6,7 @@
     buttons: true,
     translation: true,
     title: true,
+    actualLinks: true,
     hideGrok: false,
     hideDrawers: false,
     hideEditImage: false,

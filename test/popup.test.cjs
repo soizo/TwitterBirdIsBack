@@ -56,6 +56,159 @@ test("Edit image toggle hides only matching links, including dynamic links", {
   assert.equal(await page.locator("#edit").isVisible(), true);
 });
 
+test("Actual link restores complete URLs by default and respects saved switches", {
+  timeout: 30000,
+}, async (t) => {
+  const { context, popup } = await install(t);
+  await context.route("https://x.com/**", (route) =>
+    route.fulfill({
+      contentType: "text/html; charset=utf-8",
+      body: `<div data-testid="tweetText"><a id="actual" dir="ltr" href="https://t.co/xbDKj7jhvU" rel="noopener noreferrer nofollow" target="_blank" role="link" style="color: rgb(29, 155, 240)"><span aria-hidden="true">https://</span>github.com/soizo/FreeNumi</a></div>`,
+    }),
+  );
+  const page = await context.newPage();
+  await page.goto("https://x.com/home");
+  // A wrong default, missing manifest script, or failing conversion breaks this.
+  const destination = "https://github.com/soizo/FreeNumi";
+  assert.equal(await page.locator("#actual").getAttribute("href"), destination);
+  assert.equal(await popup.locator("input[name=actualLinks]").isChecked(), true);
+  assert.deepEqual(await page.locator("#actual").evaluate((link) => ({
+    text: link.textContent,
+    target: link.target,
+    rel: link.rel,
+    color: getComputedStyle(link).color,
+    hidden: link.firstElementChild.getAttribute("aria-hidden"),
+  })), {
+    text: destination,
+    target: "_blank",
+    rel: "noopener noreferrer nofollow",
+    color: "rgb(29, 155, 240)",
+    hidden: "true",
+  });
+  await context.route("https://github.com/**", (route) =>
+    route.fulfill({ contentType: "text/html", body: "Destination" }),
+  );
+  const opened = page.waitForEvent("popup");
+  await page.locator("#actual").click();
+  const target = await opened;
+  await target.waitForLoadState();
+  assert.equal(target.url(), destination, "ordinary clicks go directly to the destination");
+  await target.close();
+
+  await toggle(popup, "actualLinks", false);
+  assert.equal(await page.locator("#actual").getAttribute("href"), destination, "requires refresh");
+  await page.reload();
+  assert.equal(await page.locator("#actual").getAttribute("href"), "https://t.co/xbDKj7jhvU");
+  await popup.reload();
+  await popup.locator("input[name=enabled]:enabled").waitFor();
+  assert.equal(await popup.locator("input[name=actualLinks]").isChecked(), false);
+  await toggle(popup, "actualLinks", true);
+  // This feature must not depend on bird/translation or other classic UI switches.
+  await popup.evaluate(() => chrome.storage.local.set({
+    bird: false, terms: false, buttons: false, translation: false, title: false,
+  }));
+  await page.reload();
+  assert.equal(await page.locator("#actual").getAttribute("href"), destination);
+  await toggle(popup, "enabled", false);
+  assert.equal(await popup.locator("input[name=actualLinks]").isDisabled(), true);
+  await page.reload();
+  assert.equal(await page.locator("#actual").getAttribute("href"), "https://t.co/xbDKj7jhvU");
+});
+
+test("Actual link handles dynamic DOM and leaves incomplete or unsafe destinations alone", {
+  timeout: 30000,
+}, async (t) => {
+  const { context } = await install(t);
+  await context.route("https://x.com/**", (route) => route.fulfill({
+    contentType: "text/html; charset=utf-8",
+    body: `<main>
+      <a id="title" href="https://t.co/title" title="https://example.org/full/path?q=a&amp;b=2#part">example.org/full…</a>
+      <a id="http" href="http://t.co/http">http://example.org/path</a>
+      <a id="late-text" href="https://t.co/text"><span></span></a>
+      <a id="late-title" href="https://t.co/title">example.org/…</a>
+      <a id="late-href">https://example.org/late</a>
+    </main>`,
+  }));
+  const page = await context.newPage();
+  const externalRequests = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).hostname !== "x.com") externalRequests.push(request.url());
+  });
+  await page.goto("https://x.com/home");
+  assert.equal(await page.locator("#title").getAttribute("href"), "https://example.org/full/path?q=a&b=2#part");
+  assert.equal(await page.locator("#http").getAttribute("href"), "http://example.org/path");
+  await page.evaluate(() => {
+    const span = document.querySelector("#late-text span");
+    span.append(document.createTextNode("not ready"));
+    document.querySelector("#late-title").title = "https://example.org/from-title";
+    document.querySelector("#late-href").href = "https://t.co/late";
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = '<a id="inserted" href="https://t.co/new"><span>https://</span>example.org/new</a>';
+    document.querySelector("main").append(wrapper);
+  });
+  await page.locator("#late-text span").evaluate((span) => {
+    span.firstChild.data = "https://example.org/from-text";
+  });
+  for (const [id, url] of [
+    ["late-text", "https://example.org/from-text"],
+    ["late-title", "https://example.org/from-title"],
+    ["late-href", "https://example.org/late"],
+    ["inserted", "https://example.org/new"],
+  ]) assert.equal(await page.locator(`#${id}`).getAttribute("href"), url, id);
+  await page.locator("#inserted").evaluate((link) => {
+    link.href = "https://t.co/redraw";
+    link.textContent = "https://example.org/redrawn";
+  });
+  assert.equal(await page.locator("#inserted").getAttribute("href"), "https://example.org/redrawn");
+  await page.locator("#inserted").evaluate((link) => { link.href = "https://t.co/restored"; });
+  assert.equal(await page.locator("#inserted").getAttribute("href"), "https://example.org/redrawn");
+
+  await page.locator("#inserted").evaluate((link) => { link.textContent = "https://example.org/text-update"; });
+  assert.equal(await page.locator("#inserted").getAttribute("href"), "https://example.org/text-update", "text-only redraws must not leave stale destinations");
+  await page.locator("#inserted").evaluate((link) => { link.textContent = "https://example.org/incomplete…"; });
+  assert.equal(await page.locator("#inserted").getAttribute("href"), "https://t.co/restored", "fall back to the original short link when the destination becomes incomplete");
+  await page.locator("#title").evaluate((link) => { link.title = "https://example.org/updated-title"; });
+  assert.equal(await page.locator("#title").getAttribute("href"), "https://example.org/updated-title");
+  await page.locator("#title").evaluate((link) => { link.href = "https://example.net/site-changed"; });
+  assert.equal(await page.locator("#title").getAttribute("href"), "https://example.net/site-changed", "a new non-t.co href belongs to the site");
+
+  // Removing validation must not turn partial text, editing content or non-t.co links into new targets.
+  const unchanged = [
+    ["https://t.co/short", "https://example.org/partial…"],
+    ["https://t.co/dots", "https://example.org/partial..."],
+    ["https://t.co/no-scheme", "example.org/path"],
+    ["https://t.co/label", "Visit this website"],
+    ["https://t.co/script", "javascript:alert(1)"],
+    ["https://t.co/data", "data:text/html,hello"],
+    ["https://t.co/userinfo", "https://example.org@evil.test/path"],
+    ["https://t.co/space", "https://example.org/a b"],
+    ["https://t.co/control", "https://exam\nple.org/path"],
+    ["https://t.co/backslash", "https://example.org\\path"],
+    ["https://t.co/invalid", "https://[invalid"],
+    ["https://t.co/another", "https://t.co/other"],
+    ["https://t.co.evil.test/path", "https://example.org/path"],
+    ["https://example.net/original", "https://example.org/path"],
+    ["/home", "https://example.org/path"],
+  ];
+  assert.deepEqual(await page.evaluate((cases) => {
+    for (const [href, text] of cases) {
+      const link = document.createElement("a");
+      link.className = "unchanged";
+      link.setAttribute("href", href);
+      link.textContent = text;
+      document.body.append(link);
+    }
+    const editor = document.createElement("div");
+    editor.contentEditable = "true";
+    editor.innerHTML = '<a class="unchanged" href="https://t.co/edit">https://example.org/edit</a>';
+    document.body.append(editor);
+    return new Promise((resolve) => requestAnimationFrame(() => resolve(
+      [...document.querySelectorAll(".unchanged")].map((link) => link.getAttribute("href")),
+    )));
+  }, unchanged), [...unchanged.map(([href]) => href), "https://t.co/edit"]);
+  assert.deepEqual(externalRequests, [], "resolving links must not make network requests");
+});
+
 async function install(t, locale = "en-US") {
   assert.ok(
     manifest.action?.default_popup,
