@@ -44,7 +44,7 @@ form {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 40px;
+  min-height: 36px;
   cursor: pointer;
 }
 .master {

@@ -1,0 +1,7 @@
+Twemoji 17.0.3 COLRv0 font, distributed unchanged.
+Source: https://github.com/10ta/twemoji-color-font
+Release: https://github.com/10ta/twemoji-color-font/releases/tag/v17.0.3
+File: Twemoji-17.0.3.ttf
+SHA-256: a7e5b6123f9e347008c31e29b1bdfe2aea3e96c953fa4d4eed6987f9df71987f
+Artwork: Twitter, Inc. and other contributors, CC BY 4.0 (LICENSE-CC-BY.txt).
+Font build code: MIT (LICENSE-MIT.txt).

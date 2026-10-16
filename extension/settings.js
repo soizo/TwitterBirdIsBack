@@ -7,6 +7,7 @@
     translation: true,
     title: true,
     actualLinks: true,
+    twemoji: true,
     hideGrok: false,
     hideDrawers: false,
     hideEditImage: false,

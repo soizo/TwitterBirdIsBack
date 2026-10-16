@@ -58,6 +58,7 @@ Changes are saved as soon as you select them. Existing pages need a manual refre
 | Restore classic blue buttons | On |
 | Restore the globe icon for translation | On |
 | Restore Twitter tab titles | On |
+| Twemoji emoji font | On |
 | Actual link: replace short links with complete page-supplied URLs | On |
 | Hide all recognized Grok entry points | Off |
 | Hide the floating Grok and Chat panel | Off |
@@ -67,6 +68,8 @@ The two hiding options work independently. "Hide all recognized Grok entry point
 **Actual link** replaces `t.co` links with a complete HTTP(S) URL from the link's `title` or text, including dynamically loaded links. It preserves the displayed text and opening behavior. Incomplete or unsupported URLs are left unchanged; it does not fetch short links or guess missing parts. Destinations come from the page and are not independently verified. Direct links bypass the `t.co` redirect and any warnings it might show; turn this option off if you prefer the original links.
 
 The classic bird appears on Twitter pages, including the login/signup landing page. Its signup artwork scales down on narrow screens while preserving the site's light/dark theme and login controls. The tab-title setting also restores the fixed signup slogan's Twitter branding. The laser-eye bird is limited to the browser toolbar, extension management page, and popup.
+
+Twemoji uses the bundled [10ta/twemoji-color-font](https://github.com/10ta/twemoji-color-font) 17.0.3 COLRv0 font for Unicode emoji, including newly inserted text and input fields. It preserves the site’s ordinary text fonts and does not replace emoji images. No font download is made while browsing. Font artwork is licensed under CC BY 4.0; notices and licenses are bundled in `extension/fonts/`.
 
 ## Language support
 

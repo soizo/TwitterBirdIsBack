@@ -659,3 +659,38 @@ test("Grok and floating-drawer options are independent and preserve ordinary cha
   ])
     assert.equal(await visible(selector), true, selector);
 });
+
+
+test("Twemoji loads the bundled color font and respects refresh and master switches", { timeout: 30000 }, async (t) => {
+  const { context, popup } = await install(t);
+  assert.equal(await popup.locator("input[name=twemoji]").isChecked(), true);
+  await context.route("https://x.com/**", route => route.fulfill({
+    contentType: "text/html; charset=utf-8",
+    body: '<style>.copy { font-family: Georgia, serif }</style><p class="copy" id="emoji">Hello 中文 😀 👍🏽 👨‍👩‍👧‍👦 🇨🇳</p><textarea>Draft 😀</textarea>',
+  }));
+  const page = await context.newPage();
+  await page.goto("https://x.com/home");
+  await page.waitForFunction(() => getComputedStyle(document.querySelector("#emoji")).fontFamily.includes("Twitter Bird Twemoji"));
+  assert.equal(await page.evaluate(async () => {
+    await document.fonts.load('16px "Twitter Bird Twemoji"', '😀');
+    return document.fonts.check('16px "Twitter Bird Twemoji"', '😀');
+  }), true, "bundled font must decode in the page");
+  assert.match(await page.locator("#emoji").evaluate(el => getComputedStyle(el).fontFamily), /Georgia/);
+  assert.equal(await page.locator("textarea").inputValue(), "Draft 😀");
+  await page.evaluate(() => {
+    const p = document.createElement("p"); p.id = "late"; p.style.fontFamily = "monospace";
+    p.textContent = "Dynamic 🐦"; document.body.append(p);
+  });
+  await page.waitForFunction(() => getComputedStyle(document.querySelector("#late")).fontFamily.includes("Twitter Bird Twemoji"));
+  await page.locator("#late").evaluate(el => { el.style.fontFamily = "serif"; });
+  await page.waitForFunction(() => getComputedStyle(document.querySelector("#late")).fontFamily.includes("Twitter Bird Twemoji"));
+  await toggle(popup, "twemoji", false);
+  assert.match(await page.locator("#emoji").evaluate(el => getComputedStyle(el).fontFamily), /Twitter Bird Twemoji/);
+  await page.reload();
+  assert.doesNotMatch(await page.locator("#emoji").evaluate(el => getComputedStyle(el).fontFamily), /Twitter Bird Twemoji/);
+  await popup.reload(); await popup.locator("input[name=enabled]:enabled").waitFor();
+  assert.equal(await popup.locator("input[name=twemoji]").isChecked(), false);
+  await toggle(popup, "twemoji", true); await toggle(popup, "enabled", false);
+  await page.reload();
+  assert.doesNotMatch(await page.locator("#emoji").evaluate(el => getComputedStyle(el).fontFamily), /Twitter Bird Twemoji/);
+});
