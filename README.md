@@ -1,4 +1,5 @@
-# Twitter Bird Is Back _(TwitterBirdIsBack / twitter-bird-is-back)_
+# Twitter Bird Is Back 
+_(TwitterBirdIsBack / twitter-bird-is-back)_
 
 Restore the classic Twitter bird, terminology, and blue buttons in Chrome and Firefox.
 
