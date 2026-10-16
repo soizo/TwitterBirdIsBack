@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const { launchBrowser } = require("../test-support/browser.cjs");
 
 // Representative current X messages; sources are recorded in docs/localization.md.
 const messages = [
@@ -60,7 +61,7 @@ const messages = [
 ];
 
 test("system notifications restore classic wording without rewriting posts or unrelated alerts", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(`

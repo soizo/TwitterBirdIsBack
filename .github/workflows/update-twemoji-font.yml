@@ -1,0 +1,63 @@
+name: Update Twemoji font
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-twemoji-font
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update from the latest upstream release
+        id: update
+        run: python3 scripts/update-twemoji-font.py
+
+      - name: Test and build
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          PLAYWRIGHT_CHANNEL=chromium npm test
+          npm run build
+
+      - name: Create pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.update.outputs.version }}
+        run: |
+          branch="automation/twemoji-${VERSION}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add extension README.md docs scripts/update-twemoji-font.py
+          git commit -m "chore: update Twemoji font to ${VERSION}"
+          git push --force origin "$branch"
+
+          body_file="$(mktemp)"
+          cat >"$body_file" <<EOF
+          Updates the bundled Twemoji COLRv0 font to upstream release [v${VERSION}](https://github.com/10ta/twemoji-color-font/releases/tag/v${VERSION}).
+
+          The font asset and upstream license files were downloaded by the repository updater. The font SHA-256 is recorded in \`extension/fonts/NOTICE.txt\`.
+
+          Validation: \`npm test\` and \`npm run build\`.
+          EOF
+
+          existing="$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --title "Update Twemoji font to ${VERSION}" --body-file "$body_file"
+          else
+            gh pr create --head "$branch" --base "${{ github.event.repository.default_branch }}" \
+              --title "Update Twemoji font to ${VERSION}" --body-file "$body_file"
+          fi

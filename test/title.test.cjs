@@ -2,11 +2,12 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const { launchBrowser } = require("../test-support/browser.cjs");
 
 const scriptPath = path.resolve(__dirname, "../extension/title.js");
 
 test("English tab titles restore only structural branding and fixed UI terms", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const cases = [
     ["(8) Home / X", "(8) Home / Twitter"],
@@ -49,7 +50,7 @@ test("English tab titles restore only structural branding and fixed UI terms", a
 });
 
 test("tab titles recover from startup, unread updates, navigation and title-node replacement", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.route("https://x.com/**", (route) =>

@@ -2,9 +2,10 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const { launchBrowser } = require("../test-support/browser.cjs");
 
 test("known site-brand hints change without rewriting posts, profiles, drafts or links", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(`<main><span id="source">Sourced from across <b>X</b></span>
@@ -46,7 +47,7 @@ test("known site-brand hints change without rewriting posts, profiles, drafts or
 });
 
 test("priority-language reply placeholders use their own historical prompts", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   for (const [language, current, historical] of [
     ["zh", "发布你的回复", "发布你的回复！"],
@@ -75,7 +76,7 @@ test("priority-language reply placeholders use their own historical prompts", as
 });
 
 test("reply placeholders restore historical wording without touching draft text", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(`<div class="public-DraftEditorPlaceholder-inner">Post your reply</div>

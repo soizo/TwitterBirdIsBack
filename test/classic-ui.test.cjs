@@ -2,11 +2,12 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const { launchBrowser } = require("../test-support/browser.cjs");
 
 const scriptPath = path.resolve(__dirname, "../extension/classic-ui.js");
 
 test("classic terminology changes UI labels but preserves user content and input", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(`
@@ -52,7 +53,7 @@ test("classic terminology changes UI labels but preserves user content and input
 });
 
 test("dynamic UI labels stay classic after insertion and text or accessible-name updates", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent("<main></main>");
@@ -89,7 +90,7 @@ test("dynamic UI labels stay classic after insertion and text or accessible-name
 });
 
 test("hover and native hints use classic action labels without altering arbitrary tooltip text", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(`
@@ -166,7 +167,7 @@ test("hover and native hints use classic action labels without altering arbitrar
 });
 
 test("opening tweet details restores the page heading without renaming profiles or user headings", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.route("https://x.com/**", (route) =>
@@ -216,7 +217,7 @@ test("opening tweet details restores the page heading without renaming profiles 
 });
 
 test("post and Follow buttons use classic blue with darker hover without changing disabled or following behavior", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   for (const theme of ["light", "dark"]) {

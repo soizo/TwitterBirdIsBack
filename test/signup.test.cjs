@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const { launchBrowser } = require("../test-support/browser.cjs");
 
 // The shared 480×490 brand path from the six supplied light/dark signup snapshots.
 // Keep only the logo and layout scaffolding, not saved scripts or user/session data.
@@ -37,7 +38,7 @@ function fixture(dark, modern) {
 }
 
 test("signup logos use one classic blue bird across themes, layouts and widths without changing the form", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   for (const dark of [false, true]) {
     for (const modern of [false, true]) {
@@ -80,7 +81,7 @@ test("signup logos use one classic blue bird across themes, layouts and widths w
 });
 
 test("signup logos recover after insertion, path redraw and viewBox reset; existing switches remain independent", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent('<html lang="en-GB"><head><title>X. It’s what’s happening / X</title></head><body><main></main></body></html>');

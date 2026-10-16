@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const { launchBrowser } = require("../test-support/browser.cjs");
 
 // Captured from x.com's brand link; not the ordinary close-button icon.
 const xLogo =
@@ -9,7 +10,7 @@ const xLogo =
 const closeIcon = "M18 6L6 18M6 6l12 12";
 
 test("X brand becomes a blue bird without changing the close button or home link", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(`
@@ -32,7 +33,7 @@ test("X brand becomes a blue bird without changing the close button or home link
 });
 
 test("brand logos inserted after startup also become blue birds", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent("<main></main>");
@@ -136,7 +137,7 @@ test("installed extension replaces the splash logo before page loading finishes"
 });
 
 test("favicon becomes a locally loadable blue bird without changing other head links", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(`
@@ -172,7 +173,7 @@ test("favicon becomes a locally loadable blue bird without changing other head l
 test("favicon stays a blue bird when the site rewrites its attributes", {
   timeout: 10000,
 }, async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent('<link rel="icon" href="https://x.com/original.ico">');

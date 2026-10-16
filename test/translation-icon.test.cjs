@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const { launchBrowser } = require("../test-support/browser.cjs");
 
 // Captured from the SVG immediately before x.com's Show translation button.
 const grok =
@@ -9,7 +10,7 @@ const grok =
 const icon = `<svg width="20" height="20" viewBox="0 0 33 32" aria-hidden="true"><g><path fill="currentColor" d="${grok}"></path></g></svg>`;
 
 test("only the Grok icon immediately beside Show translation becomes a 36x36 globe", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(`
@@ -57,7 +58,7 @@ test("only the Grok icon immediately beside Show translation becomes a 36x36 glo
 });
 
 test("translation globe handles buttons and labels arriving after their SVG", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent(
@@ -105,7 +106,7 @@ test("translation globe handles buttons and labels arriving after their SVG", as
 
 test("translation icons support every official display language without matching unrelated Grok labels", async (t) => {
   const observed = require("./fixtures/x-locales.json");
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.setContent("<main></main><nav></nav>");

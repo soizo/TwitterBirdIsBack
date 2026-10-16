@@ -2,6 +2,7 @@ const assert = require("node:assert/strict");
 const { test } = require("node:test");
 const path = require("node:path");
 const { chromium } = require("playwright");
+const { launchBrowser } = require("../test-support/browser.cjs");
 const manifest = require("../extension/manifest.json");
 
 async function inject(page) {
@@ -16,7 +17,7 @@ async function inject(page) {
 }
 
 test("Simplified Chinese restores sourced controls and split notifications without changing user content", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.route("https://x.com/**", (route) =>
@@ -85,7 +86,7 @@ test("Simplified Chinese restores sourced controls and split notifications witho
 test("priority locales preserve nouns, verbs, counted states, title grammar and dynamic updates", {
   timeout: 60000,
 }, async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   // Expected strings are independently recorded from the sources in docs/localization.md.
   for (const fixture of require("./fixtures/priority-classic.json")) {
@@ -165,7 +166,7 @@ test("priority locales preserve nouns, verbs, counted states, title grammar and 
 });
 
 test("unimplemented languages keep their wording, late language selection works, and profile headings remain names", async (t) => {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
   await page.route("https://x.com/**", (route) =>
