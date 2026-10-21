@@ -160,5 +160,32 @@
       "Alice trên X: \"Post X\" / X",
       "Alice trên Twitter: \"Post X\" / Twitter"
     ]
+  },
+  {
+    "language": "pl",
+    "post": [
+      "Wpis",
+      "Tweet"
+    ],
+    "heading": [
+      "Wpisy",
+      "Tweety"
+    ],
+    "undo": [
+      "Cofnij podanie dalej wpisu",
+      "Cofnij podanie dalej"
+    ],
+    "notice": [
+      "Twój wpis został wysłany.",
+      "Twój Tweet został wysłany."
+    ],
+    "count": [
+      "23 podania dalej. Podano dalej.",
+      "23 Tweety podane dalej. Podano dalej"
+    ],
+    "title": [
+      "Alice w serwisie X: „Post X” / X",
+      "Alice na Twitterze: „Post X” / Twitter"
+    ]
   }
 ]

@@ -22,6 +22,7 @@ HISTORICAL = {
     "ja": "19bd9f1a",
     "ko": "8ece0f6a",
     "vi": "58b1d9da",
+    "pl": "629b2e8a",
 }
 NOUNS = {
     "en": ("Post", "Tweet"),
@@ -31,6 +32,7 @@ NOUNS = {
     "ja": ("ポスト", "ツイート"),
     "ko": ("게시물", "트윗"),
     "vi": ("Bài đăng", "Tweet"),
+    "pl": ("Wpis", "Tweet"),
 }
 TERMS = dict(
     zip(

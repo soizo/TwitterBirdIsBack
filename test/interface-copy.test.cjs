@@ -55,6 +55,7 @@ test("priority-language reply placeholders use their own historical prompts", as
     ["ja", "返信をポスト", "返信をツイートしましょう。"],
     ["ko", "답글 게시하기", "내 답글을 트윗하세요"],
     ["vi", "Đăng câu trả lời của bạn", "Đăng Tweet câu trả lời của bạn!"],
+    ["pl", "Opublikuj swoją odpowiedź", "Wyślij Tweeta z odpowiedzią!"],
   ]) {
     const page = await browser.newPage();
     await page.setContent(
@@ -187,7 +188,7 @@ test("brand-only restoration covers new interface copy and hints in all 45 langu
     assert.equal(await page.locator("#site").getAttribute("href"), "https://x.com/settings", language);
     await page.locator("#hint").evaluate(node => node.setAttribute("aria-label", "Another X feature"));
     assert.equal(await page.locator("#hint").getAttribute("aria-label"), "Another Twitter feature", language);
-    if (!["en", "en-GB", "zh", "zh-Hant", "ja", "ko", "vi"].includes(language)) {
+    if (!["en", "en-GB", "zh", "zh-Hant", "ja", "ko", "vi", "pl"].includes(language)) {
       const title = titles[language].replace("{name}", "Alice X").replace("{text}", "Post X");
       await page.evaluate(title => document.title = title + " / X", title);
       const expected = titles[language].replace(/X/g, "Twitter").replace("{name}", "Alice X").replace("{text}", "Post X");

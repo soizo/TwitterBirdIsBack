@@ -76,7 +76,7 @@ Twemoji uses the bundled [10ta/twemoji-color-font](https://github.com/10ta/twemo
 
 Interface branding works across all 45 Twitter display-language options. It recognizes the brand in interface context, including new copy, localized suffixes, accessibility labels and tab-title templates.
 
-- English (including British English), Simplified Chinese, Traditional Chinese, Japanese, Korean and Vietnamese also restore classic Twitter terminology, such as Tweet and Retweet, using verified historical wording.
+- English (including British English), Simplified Chinese, Traditional Chinese, Japanese, Korean, Vietnamese and Polish also restore classic Twitter terminology, such as Tweet and Retweet, using verified historical wording.
 - Other languages keep their current action words and restore the Twitter brand only.
 - The popup follows the browser language and retains its existing English, Chinese, Japanese, Korean, Spanish, Russian and Ukrainian translations. Other popup languages fall back to English.
 - The translation-entry icon recognizes all 45 display-language options.

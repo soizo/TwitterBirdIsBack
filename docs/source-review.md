@@ -12,7 +12,7 @@ From the extracted source archive's root directory, run:
 python3 scripts/package-extension.py --output releases
 ```
 
-For version 0.1.7, the Firefox upload is `releases/twitter-bird-is-back-0.1.7-firefox-unsigned.zip`. The script copies the runtime files unchanged and adds the stable Firefox extension ID, minimum browser versions and no-data-collection declaration to `manifest.json`. ZIP timestamps and file order are fixed. `releases/SHA256SUMS` records the generated archive hashes.
+For version 0.1.8, the Firefox upload is `releases/twitter-bird-is-back-0.1.8-firefox-unsigned.zip`. The script copies the runtime files unchanged and adds the stable Firefox extension ID, minimum browser versions and no-data-collection declaration to `manifest.json`. ZIP timestamps and file order are fixed. `releases/SHA256SUMS` records the generated archive hashes.
 
 `npm run build` only copies `extension/` into `dist/` for local browser loading and is not needed to reproduce the Firefox ZIP. The checked-in icons and locale catalog are shipped as-is; do not regenerate them for this reproduction. Their optional maintenance scripts and original assets are included for inspection.
 
@@ -46,3 +46,7 @@ Restore Twitter in the Discover more recommendation subtitle, including the repo
 ## 0.1.7 changes
 
 Split website localization into detailed terminology for English/British English, Simplified/Traditional Chinese, Japanese, Korean and Vietnamese, and brand-only restoration for other languages. Vietnamese uses verified historical bundle `vi.58b1d9da.js`. Replace the heading-specific branding workaround with context-aware brand matching across interface text and accessibility hints. Preserve text-node positions, protected user content, close glyphs, account links, handles, URLs and larger words. All 45 languages use first-party title grammar to keep names and quoted posts untouched. Popup languages and permissions are unchanged.
+
+## 0.1.8 changes
+
+Add Polish detailed terminology using the official historical `pl.629b2e8a.js` resource. Restore Tweet actions/headings, repost actions, reply prompts, notifications and title grammar. Include singular/few/many counter regression coverage while preserving the original numeric string. Other localization tiers, popup languages, permissions and data handling remain unchanged. This release also includes the 0.1.6–0.1.7 branding fixes and Vietnamese terminology, which were prepared locally.

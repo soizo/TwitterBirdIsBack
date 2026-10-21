@@ -254,3 +254,23 @@ test("brand-only languages keep their wording, late language selection works, an
     }
   }
 });
+
+
+test("Polish repost counts preserve singular, few and many forms", async (t) => {
+  const browser = await launchBrowser(chromium);
+  t.after(() => browser.close());
+  const page = await browser.newPage();
+  await page.setContent('<html lang="pl"><button id="count"></button></html>');
+  await inject(page);
+  for (const [count, before, after] of [
+    ["1", "podanie", "Tweet podany"],
+    ["2", "podania", "Tweety podane"],
+    ["5", "podań", "Tweetów podanych"],
+    ["12", "podań", "Tweetów podanych"],
+    ["22", "podania", "Tweety podane"],
+    ["1 002", "podania", "Tweety podane"],
+  ]) {
+    await page.locator("#count").evaluate((node, value) => node.setAttribute("aria-label", value), `${count} ${before} dalej. Podano dalej.`);
+    assert.equal(await page.locator("#count").getAttribute("aria-label"), `${count} ${after} dalej. Podano dalej`);
+  }
+});

@@ -2,9 +2,9 @@
 
 ## Scope
 
-All 45 display-language options restore the Twitter brand. English (including British English), Simplified Chinese, Traditional Chinese, Japanese, Korean and Vietnamese additionally restore verified historical Twitter terminology. Other languages intentionally retain current action wording. Coverage includes UI labels, detail headings, hover hints, native `title` and accessible labels, the translation-entry icon, and tab titles. User-authored text, display names and search queries must not be translated or rewritten.
+All 45 display-language options restore the Twitter brand. English (including British English), Simplified Chinese, Traditional Chinese, Japanese, Korean, Vietnamese and Polish additionally restore verified historical Twitter terminology. Other languages intentionally retain current action wording. Coverage includes UI labels, detail headings, hover hints, native `title` and accessible labels, the translation-entry icon, and tab titles. User-authored text, display names and search queries must not be translated or rewritten.
 
-Language resolution, interface branding, title grammar and translation-entry icon matching have 45-locale regression fixtures. Detailed terminology uses seven locale options (the six requested language groups, with British English separate). Popup localization remains independent and unchanged. Verified terminology catalogues do not cover arbitrary future UI copy.
+Language resolution, interface branding, title grammar and translation-entry icon matching have 45-locale regression fixtures. Detailed terminology uses eight locale options (the seven requested language groups, with British English separate). Popup localization remains independent and unchanged. Verified terminology catalogues do not cover arbitrary future UI copy.
 
 Public bundle URLs for every locale are recorded in `locale-sources.json`. Captured input labels live in `../test/fixtures/x-locales.json`. Canonical aliases confirmed in the first-party bundle map include `en-gb → en-GB`, `msa → ms`, `no → nb`, `zh-cn → zh`, and `zh-tw → zh-Hant`.
 
@@ -17,7 +17,7 @@ Public bundle URLs for every locale are recorded in `locale-sources.json`. Captu
 - Spanish, Russian and Ukrainian now use brand-only restoration as requested; their earlier historical evidence is retained below for reference. Vietnamese uses `vi.58b1d9da.js` for actions, headings, notices, composer prompts, counters and title grammar.
 - Localized text changes edit only the changed span of existing text nodes. SVGs, links, listeners and protected user text survive, including split notifications. Unknown messages and unimplemented interpolated-name templates remain unchanged. Title captures are inserted once without interpreting replacement metacharacters.
 
-`test/priority-classic.test.cjs` and its independently recorded fixture exercise the seven detailed locale options, native hints, counted states, split text, dynamic updates, title captures and protected content. These are browser tests against local page fixtures, not a claim of exhaustive live-account verification in every language.
+`test/priority-classic.test.cjs` and its independently recorded fixture exercise the eight detailed locale options, native hints, counted states, split text, dynamic updates, title captures and protected content. These are browser tests against local page fixtures, not a claim of exhaustive live-account verification in every language.
 
 ## Official language inventory
 
@@ -56,7 +56,7 @@ Logged-out requests currently use a different `x-web` application; its bundles s
 
 ## Reply prompts and short branding hints
 
-The current reply prompt `ed1f39ec` is “Post your reply”; historical `ad993b0e` is “Tweet your reply!”. The same identifier pair is verified for all seven current detailed locale options. These mappings apply only to the composer placeholder and its placeholder/accessibility attributes, never to draft text or arbitrary input fields.
+The current reply prompt `ed1f39ec` is “Post your reply”; historical `ad993b0e` is “Tweet your reply!”. The same identifier pair is verified for all eight current detailed locale options. These mappings apply only to the composer placeholder and its placeholder/accessibility attributes, never to draft text or arbitrary input fields.
 
 “Sourced from across X” and “源自于整个 X” come from the user's live-interface reports. In 0.1.7, branding uses interface context rather than a short English phrase allowlist or a specific module heading. It applies to text and native/accessibility hints in the main UI, navigation, sidebars and dialogs, with protected-content exclusions.
 
@@ -138,3 +138,7 @@ Interface branding no longer needs an exact sentence, a Discover more heading, o
 Text edits target each brand character in its original text node, preserving split spans, sibling text positions and listeners even with several occurrences. Attribute updates and newly inserted/changed content reuse the same policy. This is deterministic local context matching, with no model calls or external translation service. Interface redesigns or unidentified user-content containers can still require updated exclusions; these heuristics are not a claim of perfect semantic understanding.
 
 All 45 official `a4d3eb67` title templates are recorded in `extension/locales.js`, with independent fixtures in `test/fixtures/brand-titles.json`. Brand-only title changes apply to the literal template before inserting the captured name and post. The Vietnamese historical source is https://abs.twimg.com/responsive-web/client-web/i18n/vi.58b1d9da.js. Local browser fixtures cover the language tiers, dynamic text/hints, multi-occurrence split text, protected content, brand boundaries and title captures; this is not live-account verification in every language.
+
+## Polish detailed terminology (0.1.8)
+
+Polish is now a detailed locale, using the official historical resource https://abs.twimg.com/responsive-web/client-web/i18n/pl.629b2e8a.js and the current Polish resource in `locale-sources.json`. Verified pairs cover Wpis → Tweet, Wpisy → Tweety, repost actions, notices, reply prompts, counted labels and author/post title grammar. Browser fixtures additionally check singular/few/many counter forms and preserve author names and quoted text.
