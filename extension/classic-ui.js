@@ -308,6 +308,26 @@
     ].map((text) => [text, text.replace(/\bX\b/g, "Twitter")]),
   );
 
+  // The recommendation subtitle has no stable test ID. Match its official heading
+  // and direct sibling structure, rather than translating each new subtitle.
+  function restoreDiscoverBrand(element) {
+    if (element.closest(`${protectedContent}, article, ${notificationSelector}`)) return;
+    const subtitle = element.closest('div[dir]');
+    const heading = subtitle?.previousElementSibling;
+    if (
+      !subtitle?.closest('[data-testid="cellInnerDiv"]') ||
+      !subtitle.closest('main, [role="main"]') ||
+      !heading?.matches('h2, [role="heading"][aria-level="2"]') ||
+      !(globalThis.TwitterBirdLocales?.isDiscoverHeading(heading.textContent) ||
+        normalized(heading.textContent) === "Discover more") ||
+      subtitle.querySelector(`${protectedContent}, a, button, [role="button"], [role="link"]`)
+    ) return;
+    const original = subtitle.textContent;
+    if (original.length > 160) return;
+    const replacement = original.replace(/(?<![A-Za-z0-9_])X(?![A-Za-z0-9_])/g, "Twitter");
+    if (replacement !== original) replaceNodeText(textNodes(subtitle, false), replacement);
+  }
+
   function restoreBrandHint(element) {
     if (
       !english() ||
@@ -340,6 +360,7 @@
   }
 
   function restoreText(node) {
+    restoreDiscoverBrand(node.parentElement);
     restoreBrandHint(node.parentElement);
     if (
       node.parentElement.closest(".public-DraftEditorPlaceholder-inner") &&

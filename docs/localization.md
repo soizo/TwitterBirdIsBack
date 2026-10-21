@@ -123,3 +123,9 @@ Fetched directly from the official CDN, as text only:
 | `b4947556` | Translate Tweet |
 
 These historical action identifiers differ from the current ones; looking up only current IDs in old bundles incorrectly reports missing labels. This resource confirms English terminology, not yet the other languages or an exact release date. The public capture used to discover its URL is <https://urlscan.io/result/127334b1-9691-419b-9474-0de62f268aa8/>; terminology evidence comes from the CDN response itself, not the capture's description.
+
+## Discover more recommendation subtitle (0.1.6)
+
+The user supplied the live Simplified Chinese subtitle “源自于整个 X”. The original short-hint path was English-only. The module now has a separate language-independent brand restoration path: a direct subtitle sibling of the official Discover more heading (`d172116a`), inside a timeline cell and main content. The 45 heading values come from the existing first-party snapshots in `locale-sources.json`; an independently recorded heading fixture is in `test/fixtures/discover-headings.json`. Only the standalone ASCII brand token is replaced, preserving localized surrounding text, inline elements and protected content. Interactive descendants and subtitles longer than 160 characters are excluded.
+
+Tests exercise the reported Chinese subtitle and a split English subtitle under each of the 45 official headings. These mixed-language fixtures intentionally verify structural language independence, not the authenticity of other languages’ subtitle wording. No new localized subtitle translations are guessed.

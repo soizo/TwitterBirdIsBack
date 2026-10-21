@@ -123,3 +123,30 @@ test("reply placeholders restore historical wording without touching draft text"
     "Tweet your reply!",
   );
 });
+
+
+test("Discover more subtitles restore the brand across all display languages", async (t) => {
+  const browser = await launchBrowser(chromium);
+  t.after(() => browser.close());
+  const headings = require("./fixtures/discover-headings.json");
+  assert.equal(Object.keys(headings).length, 45);
+  const page = await browser.newPage();
+  for (const [language, heading] of Object.entries(headings)) {
+    await page.setContent(`<html lang="${language}"><main>
+      <div data-testid="cellInnerDiv"><div><h2></h2><div dir="ltr"><span id="source">源自于整个 X</span></div></div></div>
+      <article><h2></h2><div dir="ltr">源自于整个 X</div></article>
+      <div data-testid="cellInnerDiv"><h2>Other heading</h2><div dir="ltr" id="unrelated">源自于整个 X</div></div>
+    </main></html>`);
+    await page.locator("h2").evaluateAll((nodes, heading) => {
+      nodes.slice(0, 2).forEach(node => node.textContent = heading);
+    }, heading);
+    for (const file of ["locales.js", "classic-ui.js"])
+      await page.addScriptTag({ path: path.resolve(__dirname, "../extension", file) });
+    assert.equal(await page.locator("#source").textContent(), "源自于整个 Twitter", language);
+    assert.equal(await page.locator("article div").textContent(), "源自于整个 X", language);
+    assert.equal(await page.locator("#unrelated").textContent(), "源自于整个 X", language);
+    await page.locator("#source").evaluate(node => node.innerHTML = "Sourced from across <b>X</b>");
+    await page.waitForFunction(() => document.querySelector("#source").textContent === "Sourced from across Twitter");
+    assert.equal(await page.locator("#source b").textContent(), "Twitter");
+  }
+});

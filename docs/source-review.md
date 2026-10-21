@@ -12,7 +12,7 @@ From the extracted source archive's root directory, run:
 python3 scripts/package-extension.py --output releases
 ```
 
-For version 0.1.5, the Firefox upload is `releases/twitter-bird-is-back-0.1.5-firefox-unsigned.zip`. The script copies the runtime files unchanged and adds the stable Firefox extension ID, minimum browser versions and no-data-collection declaration to `manifest.json`. ZIP timestamps and file order are fixed. `releases/SHA256SUMS` records the generated archive hashes.
+For version 0.1.6, the Firefox upload is `releases/twitter-bird-is-back-0.1.6-firefox-unsigned.zip`. The script copies the runtime files unchanged and adds the stable Firefox extension ID, minimum browser versions and no-data-collection declaration to `manifest.json`. ZIP timestamps and file order are fixed. `releases/SHA256SUMS` records the generated archive hashes.
 
 `npm run build` only copies `extension/` into `dist/` for local browser loading and is not needed to reproduce the Firefox ZIP. The checked-in icons and locale catalog are shipped as-is; do not regenerate them for this reproduction. Their optional maintenance scripts and original assets are included for inspection.
 
@@ -38,3 +38,7 @@ Playwright is a development-only dependency. Browser installation and dependency
 - All 36 browser regression tests passed using installed Helium in an isolated profile, including bundled font decoding, dynamic text, saved settings, refresh behavior, and the master switch. This does not claim live Firefox or Android verification.
 
 The source ZIP includes source, tests, documentation, package metadata and original assets. It excludes Git internals, installed dependencies, generated release packages and local runtime data.
+
+## 0.1.6 changes
+
+Restore Twitter in the Discover more recommendation subtitle, including the reported Simplified Chinese wording. Identify this bounded module using its direct subtitle/heading structure and official heading d172116a in all 45 display languages; leave protected user content and unrelated headings alone. Local Chromium fixtures verify all 45 heading variants, split text and dynamic updates. This does not claim live-account subtitle verification in every language.
