@@ -19,7 +19,17 @@
     if (title === "X") return data?.brand ?? "Twitter";
     if (!title.endsWith(" / X")) return;
     const content = title.slice(0, -4);
-    if (!data) return `${content} / Twitter`; // Preserve generic branding, not guessed translations.
+    if (!data) {
+      const template = globalThis.TwitterBirdLocales?.titleTemplate(
+        document.documentElement?.lang || "en",
+      )?.replace(/[ \t\n\r\f]+/g, " ");
+      if (!template) return `${content} / Twitter`;
+      data = {
+        brand: "Twitter",
+        headings: {},
+        title: [template, template.replace(/X/g, "Twitter")],
+      };
+    }
     let restored = Object.hasOwn(data.headings, content)
       ? data.headings[content]
       : content;

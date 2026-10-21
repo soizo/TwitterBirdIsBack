@@ -18,7 +18,7 @@
   const controls =
     'button, [role="button"], [role="tab"], [role="menuitem"], [role="status"], [data-testid="socialContext"], [data-testid="SideNav_NewTweet_Button"]';
   const protectedContent =
-    'script, style, noscript, textarea, input, select, [contenteditable]:not([contenteditable="false"]), [data-testid="tweetText"], [data-testid="User-Name"], [data-testid="UserName"], [data-testid="UserDescription"], [data-testid="UserCell"]';
+    'script, style, noscript, textarea, input, select, [contenteditable]:not([contenteditable="false"]), [data-testid="tweetText"], [data-testid="User-Name"], [data-testid="UserName"], [data-testid="UserDescription"], [data-testid="UserCell"], [data-testid="messageEntry"], [data-testid="DMMessageText"], [data-testid="card.wrapper"], [data-testid="trend"], [data-testid="notification"]';
   const actionLabel =
     /^(?:undo\s+)?(?:reposting|reposted|reposts|repost|posting|posted|posts|post)$/i;
 
@@ -290,62 +290,54 @@
     }
   }
 
-  // Complete interface phrases only; never replace arbitrary occurrences of the brand.
-  const brandHints = new Map(
-    [
-      "Sourced from across X",
-      "New to X?",
-      "Welcome to X!",
-      "Log in to X",
-      "Sign up for X",
-      "Log out of X?",
-      "Continue to X",
-      "Your X data",
-      "Your X activity",
-      "Off-X activity",
-      "X Rules",
-      "Check what’s trending on X.",
-    ].map((text) => [text, text.replace(/\bX\b/g, "Twitter")]),
-  );
-
-  // The recommendation subtitle has no stable test ID. Match its official heading
-  // and direct sibling structure, rather than translating each new subtitle.
-  function restoreDiscoverBrand(element) {
-    if (element.closest(`${protectedContent}, article, ${notificationSelector}`)) return;
-    const subtitle = element.closest('div[dir]');
-    const heading = subtitle?.previousElementSibling;
-    if (
-      !subtitle?.closest('[data-testid="cellInnerDiv"]') ||
-      !subtitle.closest('main, [role="main"]') ||
-      !heading?.matches('h2, [role="heading"][aria-level="2"]') ||
-      !(globalThis.TwitterBirdLocales?.isDiscoverHeading(heading.textContent) ||
-        normalized(heading.textContent) === "Discover more") ||
-      subtitle.querySelector(`${protectedContent}, a, button, [role="button"], [role="link"]`)
-    ) return;
-    const original = subtitle.textContent;
-    if (original.length > 160) return;
-    const replacement = original.replace(/(?<![A-Za-z0-9_])X(?![A-Za-z0-9_])/g, "Twitter");
-    if (replacement !== original) replaceNodeText(textNodes(subtitle, false), replacement);
+  // Match the brand, not English word boundaries: X can touch CJK text and
+  // localized apostrophe suffixes. Handles, URLs, hashtags and larger words stay intact.
+  const brandPattern = /(?<![\p{Script=Latin}\p{N}\p{M}_@#/.])X(?![\p{Script=Latin}\p{N}\p{M}_/.])/gu;
+  function restoreBrand(text) {
+    return text.replace(brandPattern, "Twitter");
   }
 
-  function restoreBrandHint(element) {
-    if (
-      !english() ||
-      element.closest(
-        `${protectedContent}, article, ${notificationSelector}`,
-      ) ||
-      !element.closest(
-        'main, [role="main"], aside, nav, [data-testid="sidebarColumn"]',
-      )
-    )
-      return;
-    const original = element.textContent;
-    const replacement = brandHints.get(normalized(original));
-    if (replacement && !element.querySelector(protectedContent)) {
-      replaceNodeText(
-        textNodes(element, false),
-        original.replace(original.trim(), replacement),
-      );
+  function brandSurface(element) {
+    if (!element || element.closest(`${protectedContent}, article, ${notificationSelector}`)) return false;
+    if (!element.closest('main, [role="main"], aside, nav, [role="navigation"], [role="dialog"], [data-testid="sidebarColumn"]')) return false;
+    // Profile headings and account links carry names even outside an article.
+    const heading = element.closest('h1, h2, [role="heading"]');
+    if (heading && /^\/[^/]+\/?$/.test(location.pathname) &&
+        !/^\/(home|explore|notifications|messages|settings|search|compose|login|signup)\/?$/.test(location.pathname)) return false;
+    const link = element.closest('a[href]');
+    if (link) {
+      let url;
+      try { url = new URL(link.getAttribute("href"), location.href); } catch { return false; }
+      if (!/^(?:www\.)?(?:x|twitter)\.com$/.test(url.hostname) ||
+          !/^\/(?:i|home|explore|notifications|messages|settings|search|compose|login|signup|tos|privacy)(?:\/|$)/.test(url.pathname)) return false;
+    }
+    return true;
+  }
+
+  function restoreInterfaceBrand(node) {
+    if (!node.data.includes("X")) return;
+    const element = node.parentElement;
+    if (!brandSurface(element)) return;
+    // Aggregate only a small text unit. Never aggregate a column, card or user
+    // subtree just because one of its direct children is a whitespace text node.
+    const unit = element.closest('button, [role="button"], a, p, label, div[dir], [role="heading"]') ||
+      (element.parentElement?.matches('div, span') ? element.parentElement : element);
+    const safeUnit = brandSurface(unit) && !unit.querySelector(
+      `${protectedContent}, article, ${notificationSelector}, div, p, h1, h2, a, button, [role="button"]`,
+    );
+    const nodes = safeUnit ? textNodes(unit, false) : [node];
+    const original = nodes.map(part => part.data).join("");
+    if (original.trim() === "X" && element.closest('button, [role="button"]')) return;
+    // Apply each one-character edit in its original node, preserving all text
+    // positions even when a sentence has several brand mentions or split spans.
+    const positions = [...original.matchAll(brandPattern)].map(match => match.index).reverse();
+    const starts = [];
+    let offset = 0;
+    for (const part of nodes) { starts.push(offset); offset += part.data.length; }
+    for (const position of positions) {
+      const index = starts.findLastIndex(start => start <= position);
+      const part = nodes[index], at = position - starts[index];
+      part.data = part.data.slice(0, at) + "Twitter" + part.data.slice(at + 1);
     }
   }
 
@@ -359,9 +351,7 @@
     return replacement ? value.replace(value.trim(), () => replacement) : value;
   }
 
-  function restoreText(node) {
-    restoreDiscoverBrand(node.parentElement);
-    restoreBrandHint(node.parentElement);
+  function restoreTerms(node) {
     if (
       node.parentElement.closest(".public-DraftEditorPlaceholder-inner") &&
       !node.parentElement.closest(protectedContent)
@@ -380,7 +370,24 @@
     if (text !== node.nodeValue) node.nodeValue = text;
   }
 
+  function restoreText(node) {
+    restoreTerms(node);
+    restoreInterfaceBrand(node);
+  }
+
   function restoreLabel(element) {
+    restoreTermLabel(element);
+    if (brandSurface(element)) {
+      for (const attribute of ["aria-label", "title"]) {
+        const value = element.getAttribute(attribute);
+        if (!value || value.trim() === "X") continue;
+        const replacement = restoreBrand(value);
+        if (replacement !== value) element.setAttribute(attribute, replacement);
+      }
+    }
+  }
+
+  function restoreTermLabel(element) {
     if (
       element.matches('[data-testid^="tweetTextarea_"]') &&
       !element.parentElement?.closest(protectedContent)

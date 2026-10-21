@@ -21,9 +21,7 @@ HISTORICAL = {
     "zh-Hant": "fcfacbea",
     "ja": "19bd9f1a",
     "ko": "8ece0f6a",
-    "es": "b07ff23a",
-    "ru": "5b27460a",
-    "uk": "5327ea7a",
+    "vi": "58b1d9da",
 }
 NOUNS = {
     "en": ("Post", "Tweet"),
@@ -32,9 +30,7 @@ NOUNS = {
     "zh-Hant": ("貼文", "推文"),
     "ja": ("ポスト", "ツイート"),
     "ko": ("게시물", "트윗"),
-    "es": ("Post", "Tweet"),
-    "ru": ("Пост", "Твит"),
-    "uk": ("Пост", "Твіт"),
+    "vi": ("Bài đăng", "Tweet"),
 }
 TERMS = dict(
     zip(

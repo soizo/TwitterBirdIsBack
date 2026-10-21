@@ -74,11 +74,12 @@ Twemoji uses the bundled [10ta/twemoji-color-font](https://github.com/10ta/twemo
 
 ## Language support
 
-The extension supports English, British English, Simplified Chinese, Traditional Chinese, Japanese, Korean, Spanish, Russian, and Ukrainian.
+Interface branding works across all 45 Twitter display-language options. It recognizes the brand in interface context, including new copy, localized suffixes, accessibility labels and tab-title templates.
 
-- Interface terminology follows the language selected on Twitter. Unsupported languages retain the site's current terminology.
-- The popup follows the browser language. Unsupported languages fall back to English.
-- The translation icon recognizes additional languages, but this does not mean that all interface terminology is supported in those languages.
+- English (including British English), Simplified Chinese, Traditional Chinese, Japanese, Korean and Vietnamese also restore classic Twitter terminology, such as Tweet and Retweet, using verified historical wording.
+- Other languages keep their current action words and restore the Twitter brand only.
+- The popup follows the browser language and retains its existing English, Chinese, Japanese, Korean, Spanish, Russian and Ukrainian translations. Other popup languages fall back to English.
+- The translation-entry icon recognizes all 45 display-language options.
 
 ## Privacy and permissions
 

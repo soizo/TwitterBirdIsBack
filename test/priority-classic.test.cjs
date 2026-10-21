@@ -165,7 +165,7 @@ test("priority locales preserve nouns, verbs, counted states, title grammar and 
   }
 });
 
-test("unimplemented languages keep their wording, late language selection works, and profile headings remain names", async (t) => {
+test("brand-only languages keep their wording, late language selection works, and profile headings remain names", async (t) => {
   const browser = await launchBrowser(chromium);
   t.after(() => browser.close());
   const page = await browser.newPage();
@@ -234,7 +234,7 @@ test("unimplemented languages keep their wording, late language selection works,
       ],
     ],
   ]) {
-    for (const [count, current, classic] of cases) {
+    for (const [count, current] of cases) {
       await page.evaluate(
         ({ code, count, current }) => {
           document.documentElement.lang = code;
@@ -249,7 +249,7 @@ test("unimplemented languages keep their wording, late language selection works,
       );
       assert.equal(
         await page.locator("#count").getAttribute("aria-label"),
-        `${count} ${classic}. ${code === "ru" ? "Ретвитнуто" : "Ретвітнуто"}`,
+        `${count} ${current}. ${code === "ru" ? "Сделан репост" : "Зроблено репост"}`,
       );
     }
   }
