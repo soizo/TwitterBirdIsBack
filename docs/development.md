@@ -78,6 +78,8 @@ npx playwright install chromium
 npm test && npm run build
 ```
 
+GitHub 云端的发布与字体更新测试使用 `ubuntu-24.04` 镜像已有的浏览器共享库，只下载 Playwright 配套 Chromium（`--no-shell`），不运行系统软件包安装，也不额外下载 headless shell。完整 Chromium 仍用于实际加载扩展的测试；下载步骤限时 3 分钟。若未来 runner 镜像缺少共享库，测试会明确失败，需要按缺失库适配，不能跳过浏览器回归。
+
 每轮修改都先通过测试，再构建 `dist/`，供浏览器加载预览。DOM 测试使用本机安装的 Google Chrome；启动屏和弹窗测试使用 Playwright Chromium，在隔离配置中真实加载扩展。启动屏测试阻塞页面加载检查启动阶段；弹窗测试使用真实扩展存储检查分项开关、刷新生效与持久化。
 
 重新生成资源（仅开发时运行，不执行下载的官方脚本）：

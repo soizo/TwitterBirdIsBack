@@ -23,7 +23,10 @@ jobs:
         run: npm ci
 
       - name: Install browser for tests
-        run: npx playwright install --with-deps chromium
+        # GitHub's Ubuntu runner already supplies Chrome's shared libraries.
+        # Tests use channel: chromium, so the extra headless shell is unused.
+        timeout-minutes: 3
+        run: npx playwright install --no-shell chromium
 
       - name: Test and package both browsers
         env:

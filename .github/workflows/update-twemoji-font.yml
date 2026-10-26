@@ -23,11 +23,22 @@ jobs:
         id: update
         run: python3 scripts/update-twemoji-font.py
 
+      - uses: actions/setup-node@v6
+        if: steps.update.outputs.changed == 'true'
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install test dependencies
+        if: steps.update.outputs.changed == 'true'
+        timeout-minutes: 3
+        run: |
+          npm ci
+          npx playwright install --no-shell chromium
+
       - name: Test and build
         if: steps.update.outputs.changed == 'true'
         run: |
-          npm ci
-          npx playwright install --with-deps chromium
           PLAYWRIGHT_CHANNEL=chromium npm test
           npm run build
 
