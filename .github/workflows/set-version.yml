@@ -19,7 +19,7 @@ jobs:
   set-version:
     if: github.ref_type == 'branch'
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
         with:
@@ -28,21 +28,14 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: npm
 
       - name: Update version files
         env:
           NEW_VERSION: ${{ inputs.version }}
         run: node scripts/set-version.cjs "$NEW_VERSION"
 
-      - name: Test and build
-        env:
-          PLAYWRIGHT_CHANNEL: chromium
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
-          npm test
-          npm run build
+      - name: Verify version updater
+        run: node --test test/version.test.cjs
 
       - name: Commit version change
         env:

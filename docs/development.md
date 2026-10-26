@@ -99,7 +99,7 @@ node scripts/build-icons.cjs
 
 ## 手动修改扩展版本号
 
-在 GitHub → Actions → **Set extension version** → **Run workflow** 中选择目标分支，填写版本号（例如 `0.1.9`）。工作流同步修改 `extension/manifest.json`、`package.json` 和 `package-lock.json` 的根包版本，测试并构建成功后，由机器人提交到所选分支。版本号采用三段整数，每段为 0–65535，不允许前导零或 `0.0.0`；相同版本不产生新提交。
+在 GitHub → Actions → **Set extension version** → **Run workflow** 中选择目标分支，填写版本号（例如 `0.1.9`）。工作流同步修改 `extension/manifest.json`、`package.json` 和 `package-lock.json` 的根包版本，版本更新专项测试通过后，由机器人提交到所选分支（无需安装依赖、浏览器或执行构建）。版本号采用三段整数，每段为 0–65535，不允许前导零或 `0.0.0`；相同版本不产生新提交。
 
 目标分支须允许工作流机器人推送；并发期间若分支出现新提交，推送会失败，不会强制覆盖。工作流仅修改版本，不自动发布商店版本或 GitHub Release。普通提交和推送均不触发构建发布；如需打包并发布 GitHub Release，在默认分支手动运行 **Build and release**。
 
