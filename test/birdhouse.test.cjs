@@ -34,6 +34,13 @@ test("birdhouse follows bird settings, survives navigation redraws, and preserve
     await page.locator('nav > a[href="/home"]').evaluate((a, icon) => { a.innerHTML = icon; }, icon);
     await page.locator('nav > a[href="/home"] path').evaluate(p => p.setAttribute("d", "M1 1h2"));
     assert.equal((await computed('nav > a[href="/home"] path')).includes("M 12 9"), enabled);
+    const home = page.locator('nav > a[href="/home"]');
+    await home.evaluate(a => a.setAttribute("aria-current", "page"));
+    assert.equal((await computed('nav > a[href="/home"] path')).startsWith('path("M 12 1.696'), enabled, "selected Home uses filled birdhouse");
+    await home.evaluate((a, icon) => { a.innerHTML = icon; }, icon);
+    assert.equal((await computed('nav > a[href="/home"] path')).startsWith('path("M 12 1.696'), enabled, "selected artwork survives redraw");
+    await home.evaluate(a => a.removeAttribute("aria-current"));
+    assert.equal((await computed('nav > a[href="/home"] path')).includes("M 12 9"), enabled, "leaving Home restores outline");
     await page.close();
   }
 });
