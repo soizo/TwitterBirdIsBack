@@ -27,9 +27,18 @@
     const style = document.createElement("style");
     style.textContent = `
       nav > a[href="/home"] svg path { d: path("${svgPathDark}"); }
-      nav > a[href="/home"][aria-current="page"] svg path { d: path("${svgPathFilled}"); }
+      nav > a[href="/home"][aria-current="page"] svg path,
+      html[data-twitter-bird-home="on"] nav > a[href="/home"] svg path { d: path("${svgPathFilled}"); }
     `;
     document.documentElement.append(style);
+    syncHomeRoute();
+    window.addEventListener("popstate", syncHomeRoute);
+  }
+
+  function syncHomeRoute() {
+    const state = /^\/home\/?$/.test(location.pathname) ? "on" : "off";
+    if (document.documentElement.getAttribute("data-twitter-bird-home") !== state)
+      document.documentElement.setAttribute("data-twitter-bird-home", state);
   }
 
   if (settings.bird) replaceBirdhouseHomeIcon();
@@ -205,6 +214,8 @@
 
   replaceIcons(document.documentElement);
   new MutationObserver((records) => {
+    // Client-side navigation redraws the page without reloading this script.
+    if (settings.bird) syncHomeRoute();
     for (const record of records) {
       if (
         record.type === "attributes" &&

@@ -44,3 +44,31 @@ test("birdhouse follows bird settings, survives navigation redraws, and preserve
     await page.close();
   }
 });
+
+test("Home is filled by route without aria-current, including SPA navigation and history", async (t) => {
+  const browser = await launchBrowser(chromium);
+  t.after(() => browser.close());
+  const page = await browser.newPage();
+  await page.route("https://x.com/**", route => route.fulfill({
+    contentType: "text/html",
+    body: '<nav><a href="/home"><svg><path d="M0 0h10v10z"/></svg></a></nav><main></main>',
+  }));
+  await page.goto("https://x.com/home");
+  await page.addScriptTag({ path: path.resolve(__dirname, "../extension/content.js") });
+  const filled = () => page.locator("nav path").evaluate(p => getComputedStyle(p).d.startsWith('path("M 12 1.696'));
+  assert.equal(await filled(), true, "initial Home route is filled without aria-current");
+  await page.evaluate(() => {
+    history.pushState({}, "", "/explore");
+    document.querySelector("main").textContent = "Explore";
+  });
+  assert.equal(await filled(), false, "SPA navigation away restores outline");
+  await page.evaluate(() => {
+    history.pushState({}, "", "/home?test=1");
+    document.querySelector("nav a").innerHTML = '<svg><path d="M0 0h10v10z"/></svg>';
+  });
+  assert.equal(await filled(), true, "returning Home and redrawing preserves filled state");
+  await page.goBack();
+  assert.equal(await filled(), false, "back restores outline");
+  await page.goForward();
+  assert.equal(await filled(), true, "forward restores filled state");
+});
