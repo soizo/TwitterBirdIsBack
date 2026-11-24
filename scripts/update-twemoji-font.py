@@ -6,23 +6,80 @@ import hashlib
 import json
 import os
 import re
+import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "10ta/twemoji-color-font"
-API_URL = f"https://api.github.com/repos/{REPOSITORY}/releases/latest"
+API_BASE = "https://api.github.com/"
+API_URL = f"{API_BASE}repos/{REPOSITORY}/releases/latest"
 USER_AGENT = "TwitterBirdIsBack Twemoji updater"
 MAX_FONT_SIZE = 10_000_000
+TIMEOUT_SECONDS = 60
+ATTEMPTS = 3
+RETRY_DELAY_SECONDS = 5
+MAX_RETRY_DELAY_SECONDS = 60
+TRANSIENT_STATUSES = frozenset({429, 500, 502, 503, 504})
+
+
+def github_token() -> str:
+    """Return an API token so requests are not bound to the shared runner IP quota."""
+    return os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
+
+
+def quota_exhausted(error: urllib.error.HTTPError) -> bool:
+    remaining = (error.headers or {}).get("x-ratelimit-remaining")
+    return error.code in (403, 429) and remaining == "0"
+
+
+def is_transient(error: urllib.error.HTTPError) -> bool:
+    if error.code in TRANSIENT_STATUSES:
+        return True
+    retry_after = (error.headers or {}).get("Retry-After")
+    return error.code == 403 and bool(retry_after and retry_after.isdigit())
+
+
+def retry_delay(error: urllib.error.HTTPError | None, attempt: int) -> int:
+    retry_after = (error.headers or {}).get("Retry-After") if error is not None else None
+    if retry_after and retry_after.isdigit():
+        return min(int(retry_after), MAX_RETRY_DELAY_SECONDS)
+    return min(RETRY_DELAY_SECONDS * 2 ** (attempt - 1), MAX_RETRY_DELAY_SECONDS)
 
 
 def fetch(url: str, accept: str = "application/octet-stream") -> bytes:
-    request = urllib.request.Request(
-        url,
-        headers={"Accept": accept, "User-Agent": USER_AGENT},
-    )
-    with urllib.request.urlopen(request, timeout=60) as response:  # nosec B310
-        data = response.read(MAX_FONT_SIZE + 1)
+    headers = {"Accept": accept, "User-Agent": USER_AGENT}
+    token = github_token()
+    if token and url.startswith(API_BASE):
+        headers["Authorization"] = f"Bearer {token}"
+        headers["X-GitHub-Api-Version"] = "2022-11-28"
+
+    data = b""
+    for attempt in range(1, ATTEMPTS + 1):
+        request = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS) as response:  # nosec B310
+                data = response.read(MAX_FONT_SIZE + 1)
+            break
+        except urllib.error.HTTPError as error:
+            if quota_exhausted(error):
+                raise RuntimeError(
+                    f"GitHub API quota exhausted for {url}; set GH_TOKEN to use an "
+                    "authenticated request"
+                ) from error
+            if attempt == ATTEMPTS or not is_transient(error):
+                raise
+            delay = retry_delay(error, attempt)
+            print(f"{url} failed with HTTP {error.code}; retrying in {delay}s", flush=True)
+            time.sleep(delay)
+        except urllib.error.URLError:
+            if attempt == ATTEMPTS:
+                raise
+            delay = retry_delay(None, attempt)
+            print(f"{url} failed to connect; retrying in {delay}s", flush=True)
+            time.sleep(delay)
+
     if len(data) > MAX_FONT_SIZE:
         raise ValueError(f"Downloaded file is unexpectedly large: {url}")
     return data
